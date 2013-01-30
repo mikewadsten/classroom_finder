@@ -40,9 +40,9 @@ for tr in content.table.findAll('tr'):
 
 events = {}
 for event in eventList:
-    print event[0]
-    print
-    #events['building'] = event[0].title
+    room = event[0].find('a', {'class': 'ListText'}).string
+    print room
+    #events[room] = 
     #events['start'] = 
     #events['end'] = 
 
