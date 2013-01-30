@@ -2,11 +2,12 @@
 project: classroom_finder
 file: scraper.py
 
-This is the terrible structure that they use.
+This is the terrible structure that they use. (I think..)
 ContentBox
     tr
         td.ListText
-            Location
+            a.ListText title=Location
+                Location
         td.ListText
             Start
         td.ListText
@@ -30,9 +31,18 @@ usock.close()
 
 soup = BeautifulSoup(open('WestBank.html'))
 content = soup.find('div', {'id': 'ContentBox'})
-stuff = []
+eventList = []
 for tr in content.table.find_all('tr'):
     if (tr.find_all('td', {'class': 'ListText'}) ):
-        stuff.append(tr.findAll('td'))
+        # this is where it grabs the 4 ListText elements
+        # makes a list of lists [[building1, start, end, event],[building2, start, end, event] ... etc]
+        eventList.append(tr.findAll('td'))
 
-for item in stuff: print item
+events = {}
+for event in eventList:
+    print event[0]
+    print
+    #events['building'] = event[0].title
+    #events['start'] = 
+    #events['end'] = 
+
