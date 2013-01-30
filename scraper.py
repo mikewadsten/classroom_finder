@@ -12,6 +12,8 @@ usock.close()
 '''
 
 soup = BeautifulSoup(open('WestBank.html'))
-table = soup.table
-for entry in table.find_all('tr'):
-    print entry.prettify()
+content = soup.find('div', {'id': 'ContentBox'})
+table = BeautifulSoup(content)
+for tr in table.find_all('tr'):
+    td = tr.find('td', {'id': 'ListText'})
+    print td
