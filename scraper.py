@@ -29,7 +29,7 @@ data = usock.read()
 usock.close()
 '''
 
-soup = BeautifulSoup(open('WestBank.html'))
+soup = BeautifulSoup(open('WestBank.html'), "html.parser")
 content = soup.find('div', {'id': 'ContentBox'})
 eventList = []
 for tr in content.table.find_all('tr'):
