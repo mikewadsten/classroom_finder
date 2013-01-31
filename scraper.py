@@ -31,18 +31,12 @@ data = usock.read()
 usock.close()
 '''
 
-
 def init(source):
     ''' gather html data and generate the event dictionary from it
         @param source - string of URL or FILE to grab data from
     '''
-    # check Python version, based on BeautifulSoup docs.
-    import sys
-    if sys.version < (2, 7, 3):
-        # html5lib must be installed then. pip install html5lib
-        parser = "html5lib"
-    else:
-        parser = "html.parser"
+    # update your shit if running this as a script.
+    parser = "html.parser"
 
     if source.endswith('.html'):
         _file = True
