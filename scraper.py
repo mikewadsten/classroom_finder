@@ -35,7 +35,7 @@ def init(source):
     ''' gather html data and generate the event dictionary from it
         @param source - string of URL or FILE to grab data from
     '''
-    # update your shit if running this as a script.
+    #  if running this as a script w/ python version < 2.7.3, use html5lib via pip install
     parser = "html.parser"
 
     if source.endswith('.html'):
