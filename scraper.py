@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 '''
 project: classroom_finder
 file: scraper.py
@@ -18,8 +19,8 @@ div.ContentBox
 '''
 
 from bs4 import BeautifulSoup
-import urllib2
-import re
+#import urllib2
+#import re
 
 '''
 #TODO Use this to fetch fresh data
@@ -32,25 +33,37 @@ usock.close()
 
 
 def init(source):
-    ''' gather html data and generate the event dictionary from it 
+    ''' gather html data and generate the event dictionary from it
         @param source - string of URL or FILE to grab data from
     '''
+    # check Python version, based on BeautifulSoup docs.
+    import sys
+    if sys.version < (2, 7, 3):
+        # html5lib must be installed then. pip install html5lib
+        parser = "html5lib"
+    else:
+        parser = "html.parser"
+
     if source.endswith('.html'):
-        _file=True
+        _file = True
     if _file:
-        soup = BeautifulSoup(open(source), "html.parser")
+        soup = BeautifulSoup(open(source), parser)
     else:
         soup = BeautifulSoup(source)
 
     content = soup.find('div', {'id': 'ContentBox'})
+    if content is None:
+        print "No content found..."
+        return {}
     eventList = []
     for tr in content.table.findAll('tr'):
-        if (tr.find_all('td', {'class': 'ListText'}) ):
+        if (tr.find_all('td', {'class': 'ListText'})):
             # this is where it grabs the 4 ListText elements
             # makes a list of lists [[building1, start, end, event],[building2, start, end, event] ... etc]
             eventList.append(tr.findAll('td'))
 
     events = {}
+    from time import strptime
     for event in eventList:
         room = event[0].find('a', {'class': 'ListText'}).string
         start_times = event[1].stripped_strings
@@ -58,16 +71,20 @@ def init(source):
         times = []
         for start_time, end_time in zip(start_times, end_times):
             # Strip colon, AM/PM and spaces
-            f_start_time = start_time.replace(':','').strip(': AMPM')
-            f_end_time = end_time.replace(':','').strip(': AMPM')
+            f_start_time = strptime(start_time, "%I:%M %p")
+            s_time = (f_start_time.tm_hour, f_start_time.tm_min)
+            f_end_time = strptime(end_time, "%I:%M %p")
+            e_time = (f_end_time.tm_hour, f_end_time.tm_min)
             #events dict, key=room, value=[start time, end time]
-            times.append([f_start_time, f_end_time])
+            times.append((s_time, e_time))
         events[room] = times
 
     return events
 
+
 def get_gaps(events):
     pass
+
 
 if __name__ == '__main__':
     events = init('EastBank.html')
