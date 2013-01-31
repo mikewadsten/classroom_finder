@@ -17,10 +17,18 @@ div.ContentBox
             Event
 
 '''
-
+import os
+import sqlite3
 from bs4 import BeautifulSoup
 #import urllib2
-#import re
+
+# rebuild db each time
+try:
+    os.remove('gaps.db')
+except:
+    pass
+conn = sqlite3.connect('gaps.db')
+db = conn.cursor()
 
 '''
 #TODO Use this to fetch fresh data
@@ -30,6 +38,13 @@ usock = urllib2.urlopen(west)
 data = usock.read()
 usock.close()
 '''
+def init_db():
+    db.execute('''CREATE TABLE gaps
+                (start DATE, end DATE, length INTEGER, roomname STRING)''')
+
+def insert_gap(start, end, length, roomname):
+    query = "INSERT INTO gaps VALUES ({},{},{})".format(start,end,length,roomname)
+    db.execute(query)
 
 def init(source):
     ''' gather html data and generate the event dictionary from it
@@ -110,5 +125,6 @@ if __name__ == '__main__':
     events = init('EastBank.html')
     times = events['FOLH000012']
     gap_times = get_gap_times(times)
+    init_db()
     #print gap_times
     print pack_gaps(gap_times)
