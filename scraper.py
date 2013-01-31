@@ -19,6 +19,7 @@ div.ContentBox
 
 from bs4 import BeautifulSoup
 import urllib2
+import re
 
 '''
 #TODO Use this to fetch fresh data
@@ -42,6 +43,16 @@ events = {}
 for event in eventList:
     room = event[0].find('a', {'class': 'ListText'}).string
     print room
+    start_times = event[1].stripped_strings
+    end_times = event[2].stripped_strings
+    for start_time, end_time in zip(start_times, end_times):
+        # Strip colon, AM/PM and spaces
+        f_start_time = start_time.replace(':','').strip(': AMPM')
+        f_end_time = end_time.replace(':','').strip(': AMPM')
+        #Dictionary of events, keyed by room, value is a list of start and end times
+        events[room]=[f_start_time, f_end_time]
+        print f_start_time, f_end_time
+    print "\n"
     #events[room] = 
     #events['start'] = 
     #events['end'] = 
