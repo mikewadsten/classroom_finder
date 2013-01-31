@@ -76,13 +76,11 @@ def init(source):
     return events
 
 
-def get_gaps(times):
-    ''' return gaps from largest to smallest. This will be called on a per room basis
+def get_gap_times(times):
+    ''' return gaps ((start.hour, start.minute)(end.hour, end.minute)). 
+        This will be called on a per room basis
         @param times - a list of time tuples [((start.hour, start.minute)(end.hour, end.minute))...] 
     '''
-    pass
-
-def get_gap_times(times):
     # buidings open at 8:00 and close at 10:00
     prev_event = (None, (8, 0))
     build_close = (((22,0), None))
@@ -98,9 +96,19 @@ def get_gap_times(times):
 
     return gap_times
 
+def _gap(time_frame):
+    ''' returns gap in minutes '''
+    start = time_frame[0]
+    end = time_frame[1]
+    return (end[0] - start[0])*60 + (end[1] - start[1])
+
+def pack_gaps(gap_times):
+    gaps = map(_gap, gap_times)
+    return zip(gaps, gap_times)
+
 if __name__ == '__main__':
     events = init('EastBank.html')
     times = events['FOLH000012']
-    print times
     gap_times = get_gap_times(times)
-    print gap_times
+    #print gap_times
+    print pack_gaps(gap_times)
