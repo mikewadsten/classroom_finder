@@ -82,8 +82,25 @@ def get_gaps(times):
     '''
     pass
 
+def get_gap_times(times):
+    # buidings open at 8:00 and close at 10:00
+    prev_event = (None, (8, 0))
+    build_close = (((22,0), None))
+
+    gap_times = []  
+    for event in times:
+        # ignore duplicates
+        if prev_event[1] < event[0]:
+            gap_times.append((prev_event[1], event[0])) # (prev_finish, start)
+            prev_event = event
+
+    gap_times.append((prev_event[1], build_close[0]))
+
+    return gap_times
 
 if __name__ == '__main__':
     events = init('EastBank.html')
     times = events['FOLH000012']
     print times
+    gap_times = get_gap_times(times)
+    print gap_times
