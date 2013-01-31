@@ -4,4 +4,4 @@ To get started:
 - make sure you have pip and virtualenv
 - `virtualenv venv` 
 - `. venv/bin/activate`
-- `pip install beautifulsoup4`
+- `pip install -r requirements.pip`
