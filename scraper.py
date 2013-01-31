@@ -76,10 +76,14 @@ def init(source):
     return events
 
 
-def get_gaps(events):
+def get_gaps(times):
+    ''' return gaps from largest to smallest. This will be called on a per room basis
+        @param times - a list of time tuples [((start.hour, start.minute)(end.hour, end.minute))...] 
+    '''
     pass
 
 
 if __name__ == '__main__':
     events = init('EastBank.html')
-    print events['FOLH000012']
+    times = events['FOLH000012']
+    print times
