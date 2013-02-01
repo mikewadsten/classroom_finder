@@ -24,12 +24,11 @@ from bs4 import BeautifulSoup
 import datetime
 today = datetime.date.today()
 
-# rebuild db each time
-try:
-    os.remove('gaps.db')
-except:
-    pass
-conn = sqlite3.connect('gaps.db')
+'''We no longer want to rebuild the database each time as the classrooms table will
+now hold more permanent data (populated by a separate script, classroom_scraper.py
+Instead, init_db() now drops and recreates the gaps table'''
+
+conn = sqlite3.connect('database.db')
 db = conn.cursor()
 
 '''
@@ -41,6 +40,10 @@ data = usock.read()
 usock.close()
 '''
 def init_db():
+    try:
+        db.execute('''DROP TABLE gaps''')
+    except:
+        pass
     db.execute('''CREATE TABLE gaps
                 (start DATE, end DATE, length INTEGER, roomname STRING)''')
 
