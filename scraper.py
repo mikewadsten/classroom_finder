@@ -21,6 +21,8 @@ import os
 import sqlite3
 from bs4 import BeautifulSoup
 #import urllib2
+import datetime
+today = datetime.date.today()
 
 # rebuild db each time
 try:
@@ -78,13 +80,15 @@ def init(source):
         start_times = event[1].stripped_strings
         end_times = event[2].stripped_strings
         times = []
+
         for start_time, end_time in zip(start_times, end_times):
             # Strip colon, AM/PM and spaces
             f_start_time = strptime(start_time, "%I:%M %p")
-            s_time = (f_start_time.tm_hour, f_start_time.tm_min)
+            s_time = datetime.datetime(today.year, today.month, today.day, f_start_time.tm_hour, f_start_time.tm_min)
             f_end_time = strptime(end_time, "%I:%M %p")
-            e_time = (f_end_time.tm_hour, f_end_time.tm_min)
+            e_time = datetime.datetime(today.year, today.month, today.day, f_end_time.tm_hour, f_end_time.tm_min)
             #events dict, key=room, value=[start time, end time]
+
             times.append((s_time, e_time))
         events[room] = times
 
@@ -97,8 +101,8 @@ def get_gap_times(times):
         @param times - a list of time tuples [((start.hour, start.minute)(end.hour, end.minute))...] 
     '''
     # buidings open at 8:00 and close at 10:00
-    prev_event = (None, (8, 0))
-    build_close = (((22,0), None))
+    prev_event = (None, datetime.datetime(today.year, today.month, today.day, 8, 0))
+    build_close = (datetime.datetime(today.year, today.month, today.day, 22, 0), None)
 
     gap_times = []  
     for event in times:
@@ -115,7 +119,7 @@ def _gap(time_frame):
     ''' returns gap in minutes '''
     start = time_frame[0]
     end = time_frame[1]
-    return (end[0] - start[0])*60 + (end[1] - start[1])
+    return (end - start).seconds/60
 
 def pack_gaps(gap_times):
     gaps = map(_gap, gap_times)
