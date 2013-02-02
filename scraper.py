@@ -38,13 +38,13 @@ db = conn.cursor()
 
 def init_db():
     db.execute('''DROP TABLE IF EXISTS gaps''')
-    db.execute('''CREATE TABLE gaps (start DATE, end DATE, length INTEGER)''')
+    db.execute('''CREATE TABLE gaps (room STRING, start DATE, end DATE, length INTEGER)''')
 
 #def insert_gaps(query_list):
 #    db.executemany()
 
-def insert_gap(start, end, length):
-    query = "INSERT INTO gaps (start,end,length) VALUES (\"{}\", \"{}\", {})".format(start,end,length)
+def insert_gap(room, start, end, length):
+    query = "INSERT INTO gaps (room,start,end,length) VALUES ('{}', '{}', '{}', {})".format(room,start,end,length)
     db.execute(query)
     # how do we commit at the end instead of after every insert
     #conn.commit()
@@ -107,7 +107,7 @@ def init():
         for s_time, e_time in gap_times:
             gap_length = _gap(s_time, e_time)
             if (gap_length > SHORTEST_GAP_TIME):
-                insert_gap(s_time, e_time, gap_length)
+                insert_gap(room, s_time, e_time, gap_length)
     conn.commit()
 
 
