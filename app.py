@@ -3,6 +3,7 @@ import sqlite3
 from flask import Flask, request, g, render_template
 app = Flask(__name__)
 DATABASE = 'database.db'
+from time import strptime
 
 def connect_db():
     return sqlite3.connect(DATABASE)
@@ -28,16 +29,24 @@ def query_db(query, args=(), one=False):
                for idx, value in enumerate(row)) for row in cur.fetchall()]
     return (rv[0] if rv else None) if one else rv
 
+def hm_time(time):
+    ''' return HH:MM time'''
+    hour = time.split(' ')[1][0:2]
+    minute = time.split(' ')[1][3:5]
+    #t = strptime(time, "%y-%b-%a %H:%M:%S")
+    return "{}:{}".format(hour, minute)
+
 def gap_populate():
     query = ('select * from gaps')
     gaps = []
     for gap in query_db(query):
-        gaps.append((gap['start'],gap['end'],gap['length'],gap['room']))
+        gaps.append((hm_time(gap['start']),hm_time(gap['end']),gap['length'],gap['room']))
     return gaps
 
-
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def front_page():
+    if request.method == 'POST':
+        print request.data
     gaps = gap_populate()
     return render_template('index.html', gaps=gaps)
 

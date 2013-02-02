@@ -7,11 +7,28 @@
   <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 </head>
 <body>
+  <div class='container'>
   <p>hi</p>
+  <form>
+    Select Campus: 
+    <select>
+      <option value="east">East Bank</option><br>
+      <option value="west">West Bank</option><br>
+    </select>
+    <input type='submit', value='submit'>
+  </form>
   <div id=gaps>
-  <ul>
     {% for gap in gaps %}
-    <li>{{gap}}</li>
+    {% if loop.index is even %}<div class="gap even">
+    {% else %}<div class="gap">{% endif %}
+      <span id='room'>Room: {{gap[3]}}</span>
+      <span id='start'>Start: {{gap[0]}}</span>
+      <span id='end'>End: {{gap[1]}}</span>
+      <span id='Length'>Length: {{gap[2]}}</span>
+    <div class='clear'></div>
+    </div>
     {% endfor %}
+  </div>
+</div><!-- end container -->
 </body>
 </html>

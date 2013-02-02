@@ -1,0 +1,25 @@
+body {
+  font-family: "Lucida Console" monospace
+}
+
+.container {
+  padding:6px;
+}
+.clear {
+  clear:both
+}
+span {
+  padding-left: 1em;
+  float:left;
+  width:220px;
+  border-right: solid 2px #eee;
+}
+
+.even {
+  background-color:#999
+}
+#gaps {
+  padding:6px;
+  background-color: #777;
+}
+
