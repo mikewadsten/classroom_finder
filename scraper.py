@@ -24,7 +24,7 @@ import sqlite3
 import urllib2
 import os
 
-from lib.campus import eastURL, westURL
+from lib.campus import constructURL
 
 today = datetime.date.today()
 
@@ -54,10 +54,11 @@ def init():
     '''
     #  if running this as a script w/ python version < 2.7.3, use html5lib via pip install
     parser = "html.parser"
+    print os.environ.get("SCRAPER_ENV")
 
     # run with SCRAPER_ENV=production if you want fresh data
     if os.environ.get("SCRAPER_ENV") == "production":
-        usock = urllib2.urlopen(eastURL)
+        usock = urllib2.urlopen(constructURL(today, "east"))
         source = usock.read()
         usock.close()
         soup = BeautifulSoup(source)
@@ -73,7 +74,8 @@ def init():
     for tr in content.table.findAll('tr'):
         if (tr.find_all('td', {'class': 'ListText'})):
             # this is where it grabs the 4 ListText elements
-            # makes a list of lists [[building1, start, end, event],[building2, start, end, event] ... etc]
+            # makes a list of lists 
+            # [[building1, start, end, event],[building2, start, end, event] ... etc]
             eventList.append(tr.findAll('td'))
 
     events = {}
@@ -86,9 +88,11 @@ def init():
         for start_time, end_time in zip(start_times, end_times):
             # Strip colon, AM/PM and spaces
             f_start_time = strptime(start_time, "%I:%M %p")
-            s_time = datetime.datetime(today.year, today.month, today.day, f_start_time.tm_hour, f_start_time.tm_min)
+            s_time = datetime.datetime(today.year, today.month, today.day, \
+                    f_start_time.tm_hour, f_start_time.tm_min)
             f_end_time = strptime(end_time, "%I:%M %p")
-            e_time = datetime.datetime(today.year, today.month, today.day, f_end_time.tm_hour, f_end_time.tm_min)
+            e_time = datetime.datetime(today.year, today.month, today.day, \
+                    f_end_time.tm_hour, f_end_time.tm_min)
             #events dict, key=room, value=[start time, end time]
 
             times.append((s_time, e_time))

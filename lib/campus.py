@@ -1,4 +1,24 @@
 # define constants used for fetching html data
 
-eastURL = "http://wvprd.ocm.umn.edu/gpcwv/wv3_servlet/urd/run/wv_space.DayList?spfilter=947166,spdt=20130130,lbdviewmode=list"
-westURL = "http://wvprd.ocm.umn.edu/gpcwv/wv3_servlet/urd/run/wv_space.DayList?spfilter=947169,spdt=20130130,lbdviewmode=list"
+def pad(date):
+    '''take datetime object and pad zero on day/month if needed'''
+    day = '0' + str(date.day) if (len(str(date.day)) < 2) else date.day
+    month = '0' + str(date.month) if (len(str(date.month)) < 2) else date.month
+    return str(date.year) + month + day
+
+
+def constructURL(date, campus):
+    ''' Construct Url for fetching html data.
+        @param date - datetime object
+        @param campus - string indicating which campus code (ex. "east" -> 947166
+    '''
+    eastCode=947166
+    westCode=947169
+    if campus == "east":
+        code = eastCode
+    if campus == "west":
+        code = westCode
+    
+    return "http://wvprd.ocm.umn.edu/gpcwv/wv3_servlet/urd/run/wv_space." + \
+               "DayList?spfilter={},spdt={},lbdviewmode=list".format(code,pad(date))
+
