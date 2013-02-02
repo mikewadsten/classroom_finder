@@ -27,6 +27,7 @@ import os
 from lib.campus import constructURL
 
 today = datetime.date.today()
+SHORTEST_GAP_TIME = 15
 
 '''We no longer want to rebuild the database each time as the classrooms table will
 now hold more permanent data (populated by a separate script, classroom_scraper.py
@@ -99,13 +100,18 @@ def init():
             #events dict, key=room, value=[start time, end time]
             times.append((s_time, e_time))
         events[room] = times
+    # insert gaps
+    for room, times in events.items():
+        print "Inserting " + room
+        gap_times = get_gap_times(times)
+        for s_time, e_time in gap_times:
+            gap_length = _gap(s_time, e_time)
+            if (gap_length > SHORTEST_GAP_TIME):
+                insert_gap(s_time, e_time, gap_length)
+    conn.commit()
 
-    for room in events:
-        insert_gap_times(events[room])
-    return events
 
-
-def insert_gap_times(times):
+def get_gap_times(times):
     ''' return gaps ((start.hour, start.minute)(end.hour, end.minute)). 
         This will be called on a per room basis
         @param times - a list of time tuples [((start.hour, start.minute)(end.hour, end.minute))...] 
@@ -119,10 +125,9 @@ def insert_gap_times(times):
         # ignore duplicates
         if prev_event[1] < event[0]:
             gap_times.append( (prev_event[1], event[0]) ) # (prev_finish, start)
-            # insert gap data into db
-            insert_gap(prev_event[1], event[0], _gap(prev_event[1], event[0]))
             prev_event = event
     gap_times.append( (prev_event[1], build_close[0]) )
+    return gap_times
 
 def _gap(_from, _to):
     ''' returns gap in minutes '''
