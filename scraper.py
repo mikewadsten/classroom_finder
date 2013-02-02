@@ -41,20 +41,27 @@ def init_db():
     except:
         pass
     db.execute('''CREATE TABLE gaps
-                (start DATE, end DATE, length INTEGER, roomname STRING)''')
+                (start DATE, end DATE, length INTEGER)''')
 
-def insert_gap(start, end, length, roomname):
-    query = "INSERT INTO gaps VALUES ({},{},{})".format(start,end,length,roomname)
+#def insert_gaps(query_list):
+#    db.executemany()
+
+def insert_gap(start, end, length):
+    query = "INSERT INTO gaps (start,end,length) VALUES (\"{}\", \"{}\", {})".format(start,end,length)
     db.execute(query)
+    # how do we commit at the end instead of after every insert
+    #conn.commit()
 
 #TODO grab all sources, right now it only does EastBank from the url provided in lib/campus.py
 def init():
     ''' gather html data and generate the event dictionary from it
         @param campus - which campus to initialize
     '''
+
+    init_db()
+
     #  if running this as a script w/ python version < 2.7.3, use html5lib via pip install
     parser = "html.parser"
-    print os.environ.get("SCRAPER_ENV")
 
     # run with SCRAPER_ENV=production if you want fresh data
     if os.environ.get("SCRAPER_ENV") == "production":
@@ -94,7 +101,7 @@ def init():
             e_time = datetime.datetime(today.year, today.month, today.day, \
                     f_end_time.tm_hour, f_end_time.tm_min)
             #events dict, key=room, value=[start time, end time]
-
+            insert_gap(s_time, e_time, _gap((s_time, e_time)))
             times.append((s_time, e_time))
         events[room] = times
 
@@ -128,8 +135,4 @@ def _gap(time_frame):
     return (end - start).seconds/60
 
 if __name__ == '__main__':
-    events = init()
-    times = events['FOLH000012']
-    gap_times = get_gap_times(times)
-    print gap_times
-    init_db()
+    init()
