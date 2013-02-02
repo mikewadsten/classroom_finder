@@ -17,11 +17,15 @@ div.ContentBox
             Event
 
 '''
-import os
-import sqlite3
 from bs4 import BeautifulSoup
-#import urllib2
+from time import strptime
 import datetime
+import sqlite3
+import urllib2
+import os
+
+from lib.campus import eastURL, westURL
+
 today = datetime.date.today()
 
 '''We no longer want to rebuild the database each time as the classrooms table will
@@ -31,14 +35,6 @@ Instead, init_db() now drops and recreates the gaps table'''
 conn = sqlite3.connect('database.db')
 db = conn.cursor()
 
-'''
-#TODO Use this to fetch fresh data
-east = "http://wvprd.ocm.umn.edu/gpcwv/wv3_servlet/urd/run/wv_space.DayList?spfilter=947166,spdt=20130130,lbdviewmode=list"
-west = "http://wvprd.ocm.umn.edu/gpcwv/wv3_servlet/urd/run/wv_space.DayList?spfilter=947169,spdt=20130130,lbdviewmode=list"
-usock = urllib2.urlopen(west)
-data = usock.read()
-usock.close()
-'''
 def init_db():
     try:
         db.execute('''DROP TABLE gaps''')
@@ -51,19 +47,23 @@ def insert_gap(start, end, length, roomname):
     query = "INSERT INTO gaps VALUES ({},{},{})".format(start,end,length,roomname)
     db.execute(query)
 
-def init(source):
+#TODO grab all sources, right now it only does EastBank from the url provided in lib/campus.py
+def init():
     ''' gather html data and generate the event dictionary from it
-        @param source - string of URL or FILE to grab data from
+        @param campus - which campus to initialize
     '''
     #  if running this as a script w/ python version < 2.7.3, use html5lib via pip install
     parser = "html.parser"
 
-    if source.endswith('.html'):
-        _file = True
-    if _file:
-        soup = BeautifulSoup(open(source), parser)
-    else:
+    # run with SCRAPER_ENV=production if you want fresh data
+    if os.environ.get("SCRAPER_ENV") == "production":
+        usock = urllib2.urlopen(eastURL)
+        source = usock.read()
+        usock.close()
         soup = BeautifulSoup(source)
+    # Debug mode
+    else:
+        soup = BeautifulSoup(open("EastBank.html"), parser)
 
     content = soup.find('div', {'id': 'ContentBox'})
     if content is None:
@@ -77,7 +77,6 @@ def init(source):
             eventList.append(tr.findAll('td'))
 
     events = {}
-    from time import strptime
     for event in eventList:
         room = event[0].find('a', {'class': 'ListText'}).string
         start_times = event[1].stripped_strings
@@ -111,10 +110,10 @@ def get_gap_times(times):
     for event in times:
         # ignore duplicates
         if prev_event[1] < event[0]:
-            gap_times.append((prev_event[1], event[0])) # (prev_finish, start)
+            gap_times.append( (prev_event[1], event[0]) ) # (prev_finish, start)
             prev_event = event
 
-    gap_times.append((prev_event[1], build_close[0]))
+    gap_times.append( (prev_event[1], build_close[0]) )
 
     return gap_times
 
@@ -124,14 +123,9 @@ def _gap(time_frame):
     end = time_frame[1]
     return (end - start).seconds/60
 
-def pack_gaps(gap_times):
-    gaps = map(_gap, gap_times)
-    return zip(gaps, gap_times)
-
 if __name__ == '__main__':
-    events = init('EastBank.html')
+    events = init()
     times = events['FOLH000012']
     gap_times = get_gap_times(times)
+    print gap_times
     init_db()
-    #print gap_times
-    print pack_gaps(gap_times)
