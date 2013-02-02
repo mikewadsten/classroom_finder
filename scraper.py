@@ -36,12 +36,8 @@ conn = sqlite3.connect('database.db')
 db = conn.cursor()
 
 def init_db():
-    try:
-        db.execute('''DROP TABLE gaps''')
-    except:
-        pass
-    db.execute('''CREATE TABLE gaps
-                (start DATE, end DATE, length INTEGER)''')
+    db.execute('''DROP TABLE IF EXISTS gaps''')
+    db.execute('''CREATE TABLE gaps (start DATE, end DATE, length INTEGER)''')
 
 #def insert_gaps(query_list):
 #    db.executemany()
@@ -101,14 +97,15 @@ def init():
             e_time = datetime.datetime(today.year, today.month, today.day, \
                     f_end_time.tm_hour, f_end_time.tm_min)
             #events dict, key=room, value=[start time, end time]
-            insert_gap(s_time, e_time, _gap((s_time, e_time)))
             times.append((s_time, e_time))
         events[room] = times
 
+    for room in events:
+        insert_gap_times(events[room])
     return events
 
 
-def get_gap_times(times):
+def insert_gap_times(times):
     ''' return gaps ((start.hour, start.minute)(end.hour, end.minute)). 
         This will be called on a per room basis
         @param times - a list of time tuples [((start.hour, start.minute)(end.hour, end.minute))...] 
@@ -117,22 +114,20 @@ def get_gap_times(times):
     prev_event = (None, datetime.datetime(today.year, today.month, today.day, 8, 0))
     build_close = (datetime.datetime(today.year, today.month, today.day, 22, 0), None)
 
-    gap_times = []  
+    gap_times = []
     for event in times:
         # ignore duplicates
         if prev_event[1] < event[0]:
             gap_times.append( (prev_event[1], event[0]) ) # (prev_finish, start)
+            # insert gap data into db
+            insert_gap(prev_event[1], event[0], _gap(prev_event[1], event[0]))
             prev_event = event
-
     gap_times.append( (prev_event[1], build_close[0]) )
 
-    return gap_times
-
-def _gap(time_frame):
+def _gap(_from, _to):
     ''' returns gap in minutes '''
-    start = time_frame[0]
-    end = time_frame[1]
-    return (end - start).seconds/60
+    return (_to - _from).seconds/60
 
 if __name__ == '__main__':
     init()
+
