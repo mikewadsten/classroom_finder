@@ -3,12 +3,12 @@
 <head>
   <meta http-equiv="content-type" content="text/html; charset=utf-8">                                                                                                                      
   <link rel="stylesheet" href="static/css/style.css" type="text/css" media="screen, projection">
-  <title>UMN Classroom Finder</title> 
-  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+  <title>UMN Classroom Finder</title>
 </head>
 <body>
   <div class='container'>
-  <p>hi</p>
+    <h3>UMN Classroom Finder</h3>
+    <p>You can help add functionality by forking and contributing <a href="http://github.com/tippenein/classroom_finder">here</a></p>
   <!--
   <form>
     Select Campus: 
@@ -20,10 +20,10 @@
   </form>
   -->
   <div id=gaps>
-    <span id='room'><h4>Room</h4></span>
-    <span id='start'><h4>Start Time</h4></span>
-    <span id='end'><h4>End Time</h4></span>
-    <span id='length'><h4>Length (mins)</h4></span>
+    <span id='room'><h5>Room</h5></span>
+    <span id='start'><h5>Start Time</h5></span>
+    <span id='end'><h5>End Time</h5></span>
+    <span id='length'><h5>Length (mins)</h5></span>
     <div class='clear'></div>
     <hr>
     {% for gap in gaps %}
@@ -38,5 +38,6 @@
     {% endfor %}
   </div>
 </div><!-- end container -->
+<!--<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script> -->
 </body>
 </html>

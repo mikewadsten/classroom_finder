@@ -14,7 +14,7 @@ span {
   float:left;
   width:32%;
   border-right: solid 2px #eee;
-  font-size:1.25em;
+  font-size:105%;
 }
 span#start,
 span#end,
