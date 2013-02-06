@@ -22,6 +22,7 @@ from time import strptime
 import datetime
 import sqlite3
 import urllib2
+import re
 import os
 
 from lib.campus import constructURL
@@ -72,23 +73,22 @@ def init():
 
     content = soup.find('div', {'id': 'ContentBox'})
     if content is None:
-        print "No content found..."
-        return {}
+        exit("No content found...")
     eventList = []
     for tr in content.table.findAll('tr'):
         if (tr.find_all('td', {'class': 'ListText'})):
             # this is where it grabs the 4 ListText elements
-            # makes a list of lists 
             # [[building1, start, end, event],[building2, start, end, event] ... etc]
             eventList.append(tr.findAll('td'))
 
     events = {}
     for event in eventList:
-        room = event[0].find('a', {'class': 'ListText'}).string
+        #TODO rewrite regex to grab space id from the first href
+        href = event[0].find('a', {'class', 'ListText'}).get('href')
+        sid = get_space_id(href)
         start_times = event[1].stripped_strings
         end_times = event[2].stripped_strings
         times = []
-
         for start_time, end_time in zip(start_times, end_times):
             # Strip colon, AM/PM and spaces
             f_start_time = strptime(start_time, "%I:%M %p")
@@ -99,8 +99,10 @@ def init():
                     f_end_time.tm_hour, f_end_time.tm_min)
             #events dict, key=room, value=[start time, end time]
             times.append((s_time, e_time))
-        events[room] = times
+        events[sid] = times
+
     # insert gaps
+    '''
     for room, times in events.items():
         print "Inserting " + room
         gap_times = get_gap_times(times)
@@ -109,6 +111,11 @@ def init():
             if (gap_length > SHORTEST_GAP_TIME):
                 insert_gap(room, s_time, e_time, gap_length)
     conn.commit()
+    '''
+
+def get_space_id(_string):
+    pattern = re.compile("\([^)]+\)")
+    return re.search(pattern, _string).group()[1:-1]
 
 
 def get_gap_times(times):
