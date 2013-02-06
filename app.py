@@ -3,7 +3,7 @@ import sqlite3
 from flask import Flask, request, g, render_template
 app = Flask(__name__)
 DATABASE = 'database.db'
-import datetime
+from datetime import datetime
 
 def connect_db():
     return sqlite3.connect(DATABASE)
@@ -37,7 +37,8 @@ def hm_time(time):
     return "{}:{}".format(hour, minute)
 
 def gap_populate():
-    query = ('SELECT * FROM gaps WHERE length > 30 ORDER BY length DESC')
+    now = datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")
+    query = ("SELECT * FROM gaps WHERE end > '{}' AND length > 30 ORDER BY length DESC".format(now))
     gaps = []
     for gap in query_db(query):
         gaps.append((hm_time(gap['start']),hm_time(gap['end']),gap['length'],gap['room']))
