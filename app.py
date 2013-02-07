@@ -38,10 +38,12 @@ def hm_time(time):
 
 def gap_populate():
     now = datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")
-    query = ("SELECT * FROM gaps WHERE end > '{}' AND length > 30 ORDER BY length DESC".format(now))
+    query = ('''SELECT roomname,start,end,length FROM gaps 
+                JOIN classrooms on (classrooms.spaceID=gaps.spaceID)
+                WHERE end > '{}' AND length > 30 ORDER BY length DESC'''.format(now))
     gaps = []
     for gap in query_db(query):
-        gaps.append((hm_time(gap['start']),hm_time(gap['end']),gap['length'],gap['room']))
+        gaps.append((hm_time(gap['start']),hm_time(gap['end']),gap['length'],gap['roomname']))
     return gaps
 
 @app.route('/', methods=['GET', 'POST'])

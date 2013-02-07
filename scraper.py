@@ -38,7 +38,7 @@ db = conn.cursor()
 
 def init_db():
     db.execute('''DROP TABLE IF EXISTS gaps''')
-    db.execute('''CREATE TABLE gaps (room STRING, start DATE, end DATE, length INTEGER)''')
+    db.execute('''CREATE TABLE gaps (spaceID INT, start DATE, end DATE, length INTEGER)''')
 
 #def insert_gaps(query_list):
 #    db.executemany()
@@ -84,7 +84,7 @@ def init():
     for event in eventList:
         #TODO rewrite regex to grab space id from the first href
         href = event[0].find('a', {'class', 'ListText'}).get('href')
-        sid = get_space_id(href)
+        sid = int(get_space_id(href))
         start_times = event[1].stripped_strings
         end_times = event[2].stripped_strings
         times = []
@@ -102,12 +102,12 @@ def init():
 
     # insert gaps
     for sid, times in events.items():
-        print "Inserting " + sid
         gap_times = get_gap_times(times)
         for s_time, e_time in gap_times:
             gap_length = _gap(s_time, e_time)
             if (gap_length > SHORTEST_GAP_TIME):
                 insert_gap(sid, s_time, e_time, gap_length)
+    print "Success"
     conn.commit()
 
 
