@@ -14,11 +14,15 @@
   </div>
   <div class='container'>
   <form action='/search', method='post'>
+    <!--
     Select Campus: 
     <select>
       <option value="east">East Bank</option><br>
       <option value="west">West Bank</option><br>
-    </select>
+    </select><br>
+    -->
+    Building: <input type='text', name='building', placeholder='building'>
+    <div class='clear'></div>
     <input type='submit', value='submit', action='/search'>
   </form>
 

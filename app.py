@@ -3,6 +3,8 @@ from flask import Flask, request, url_for, redirect, \
 from datetime import datetime
 import sqlite3
 
+now = datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")
+
 app = Flask(__name__)
 DATABASE = 'database.db'
 
@@ -34,17 +36,23 @@ def query_db(query, args=(), one=False):
 @app.route('/')
 def front_page():
     now = datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")
-    return render_template('index.html', now=now, gaps=query_db('''
-        SELECT roomname,start,end,length FROM gaps 
-        JOIN classrooms on (classrooms.spaceID=gaps.spaceID)
-        WHERE end > '{}' AND length > 30 ORDER BY length DESC'''.format(now))
-    )
+    return render_template('index.html', now=now, 
+        gaps=query_db('''
+            SELECT roomname,start,end,length FROM gaps 
+            JOIN classrooms on (classrooms.spaceID=gaps.spaceID)
+            WHERE end > '{}' AND length > 30 ORDER BY length DESC'''.format(now) )
+        )
 
 @app.route('/search', methods=['POST'])
 def search():
-    if request.form:
-        print "form data"
-    return redirect(url_for('front_page'))
+    # This could be a redirect to front_page, however
+    # not sure how to pass a new set of gaps
+    if request.form['building']:
+        query = ''' 
+            SELECT roomname,start,end,length FROM gaps
+            JOIN classrooms on (classrooms.spaceID=gaps.spaceID)
+            WHERE roomname LIKE '%{}%' '''.format(request.form['building'])
+    return render_template('index.html', now=now,  gaps=query_db(query))
 
 def readabledate(time):
     pass
@@ -58,6 +66,7 @@ def hmtime(time):
     #TODO get this to recognize format..
     #t = datetime.strptime(time, "%Y-%b-%a %H:%M:%S")
     return "{}:{}".format(hour, minute)
+
 def mins_to_hrs(minutes):
     h, m = divmod(minutes, 60)
     return '{}h {}m'.format(h,m)
