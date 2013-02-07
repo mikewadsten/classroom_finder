@@ -42,7 +42,9 @@ def init():
         soup = BeautifulSoup(open("classroom_dump.html"), parser)
 
     rows = soup.table.tbody.findAll('tr')
-    for row in rows:
+    # dirty hack, we seem to get a duplicate final row
+    # I'm so sorry for this.
+    for row in rows[:-1]:
         #for column in row:
             #print "~~~~~~~~~~~~~~~COLUMN INFO~~~~~~~~~~~~~~~"
             #print column
