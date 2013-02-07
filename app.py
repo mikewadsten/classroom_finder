@@ -3,8 +3,6 @@ from flask import Flask, request, url_for, redirect, \
 from datetime import datetime
 import sqlite3
 
-now = datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")
-
 app = Flask(__name__)
 DATABASE = 'database.db'
 
@@ -45,13 +43,15 @@ def front_page():
 
 @app.route('/search', methods=['POST'])
 def search():
+    now = datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")
     # This could be a redirect to front_page, however
     # not sure how to pass a new set of gaps
     if request.form['building']:
         query = ''' 
             SELECT roomname,start,end,length FROM gaps
             JOIN classrooms on (classrooms.spaceID=gaps.spaceID)
-            WHERE roomname LIKE '%{}%' '''.format(request.form['building'])
+            WHERE end > '{}' AND length > 30 
+            AND roomname LIKE '%{}%' '''.format(now, request.form['building'])
     return render_template('index.html', now=now,  gaps=query_db(query))
 
 def readabledate(time):
