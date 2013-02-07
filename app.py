@@ -36,7 +36,7 @@ def front_page():
     now = datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")
     return render_template('index.html', now=now, 
         gaps=query_db('''
-            SELECT roomname,start,end,length FROM gaps 
+            SELECT roomname,start,end,length,gaps.spaceID FROM gaps 
             JOIN classrooms on (classrooms.spaceID=gaps.spaceID)
             WHERE end > '{}' AND length > 30 ORDER BY length DESC'''.format(now) )
         )
@@ -54,18 +54,23 @@ def search():
             AND roomname LIKE '%{}%' '''.format(now, request.form['building'])
     return render_template('index.html', now=now,  gaps=query_db(query))
 
+@app.route('/spaceinfo', methods=['POST'])
+def space_info():
+    spaceID = request.form['spaceID']
+    query = '''
+        SELECT roomname,capacity FROM classrooms
+        WHERE classrooms.spaceID='{}' '''.format(spaceID)
+    info = (query_db(query))[0]
+    return render_template('classroom_info.html', info=info)
+
 def readabledate(time):
-    pass
-    #t = datetime.strptime(time, "%Y-%b-%a %H:%M:%S")
-    #return "{} {}, {} - {} {}".format(t.month, t.day, t.year, t.hour, t.minute)
+    t = datetime.strptime(time, "%Y-%m-%d %H:%M:%S")
+    return "{} {}, {} - {} {}".format(t.month, t.day, t.year, t.hour, t.minute)
 
 def hmtime(time):
     ''' returns HH:MM time '''
-    hour = time.split(' ')[1][0:2]
-    minute = time.split(' ')[1][3:5]
-    #TODO get this to recognize format..
-    #t = datetime.strptime(time, "%Y-%b-%a %H:%M:%S")
-    return "{}:{}".format(hour, minute)
+    t = datetime.strptime(time, "%Y-%m-%d %H:%M:%S")
+    return "{}:{}".format(t.hour, t.minute)
 
 def mins_to_hrs(minutes):
     h, m = divmod(minutes, 60)
