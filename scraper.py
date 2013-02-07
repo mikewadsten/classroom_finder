@@ -68,7 +68,7 @@ def init():
         soup = BeautifulSoup(source)
     # Debug mode
     else:
-        soup = BeautifulSoup(open("EastBank.html"), parser)
+        soup = BeautifulSoup(open("test/EastBank.html"), parser)
 
     content = soup.find('div', {'id': 'ContentBox'})
     if content is None:

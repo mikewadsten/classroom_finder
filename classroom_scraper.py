@@ -29,8 +29,10 @@ def insert_classroom(spaceID,name,capacity):
 
 def init():
     ''' gather html data and generate the classroom database from it
-        @param source - string of URL or FILE to grab data from
     '''
+
+    init_db()
+
     parser = "html.parser"
     if os.environ.get("SCRAPER_ENV") == 'production':
         #TODO url for data source
@@ -39,24 +41,23 @@ def init():
         usock.close()
         soup = BeautifulSoup(source)
     else:
-        soup = BeautifulSoup(open("classroom_dump.html"), parser)
+        soup = BeautifulSoup(open("test/dump_classrooms.html"), parser)
 
     rows = soup.table.tbody.findAll('tr')
     # dirty hack, we seem to get a duplicate final row
-    # I'm so sorry for this.
     for row in rows[:-1]:
-        #for column in row:
-            #print "~~~~~~~~~~~~~~~COLUMN INFO~~~~~~~~~~~~~~~"
-            #print column
-        print "~~~~~~~~~~~~~~~ROW~~~~~~~~~~~~~~~~~~~~~`"
-        classroom_search = row.find('a', {'class', 'roomInfo'})
-        if classroom_search:
-            classroom_name = classroom_search.get_text()
-        url_search = row.find('a', {'class', 'roomInfo'})
-        if url_search:
+        try:
+            classroom_name = row.find('a', {'class', 'roomInfo'}).get_text()
+            url_search = row.find('a', {'class', 'roomInfo'})
             classroom_id = re.search('(?<=RoomID=)\w+', url_search.get('href')).group(0)
-        print classroom_name
-        print classroom_id
+        #TODO get correct exceptions and raise
+        except:
+            raise ScrapeError("search for html data failed")
+        insert_classroom(classroom_id, classroom_name, 1)
+    conn.commit()
+
+class ScrapeError(Exception):
+    pass
 
 def construct_url(sid):
     ''' this is the individual room page. We may or may not need it'''
