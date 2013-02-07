@@ -55,17 +55,13 @@ def search():
     return render_template('index.html', now=now,  gaps=query_db(query))
 
 def readabledate(time):
-    pass
-    #t = datetime.strptime(time, "%Y-%b-%a %H:%M:%S")
-    #return "{} {}, {} - {} {}".format(t.month, t.day, t.year, t.hour, t.minute)
+    t = datetime.strptime(time, "%Y-%m-%d %H:%M:%S")
+    return "{} {}, {} - {} {}".format(t.month, t.day, t.year, t.hour, t.minute)
 
 def hmtime(time):
     ''' returns HH:MM time '''
-    hour = time.split(' ')[1][0:2]
-    minute = time.split(' ')[1][3:5]
-    #TODO get this to recognize format..
-    #t = datetime.strptime(time, "%Y-%b-%a %H:%M:%S")
-    return "{}:{}".format(hour, minute)
+    t = datetime.strptime(time, "%Y-%m-%d %H:%M:%S")
+    return "{}:{}".format(t.hour, t.minute)
 
 def mins_to_hrs(minutes):
     h, m = divmod(minutes, 60)
