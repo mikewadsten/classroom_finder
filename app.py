@@ -30,33 +30,43 @@ def query_db(query, args=(), one=False):
                for idx, value in enumerate(row)) for row in cur.fetchall()]
     return (rv[0] if rv else None) if one else rv
 
-def hm_time(time):
-    ''' return HH:MM time'''
-    hour = time.split(' ')[1][0:2]
-    minute = time.split(' ')[1][3:5]
-    #t = datetime.datetime.strptime(time, "%Y-%b-%a %H:%M:%S")
-    return "{}:{}".format(hour, minute)
-
-def gap_populate():
-    now = datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")
-    query = ('''SELECT roomname,start,end,length FROM gaps 
-                JOIN classrooms on (classrooms.spaceID=gaps.spaceID)
-                WHERE end > '{}' AND length > 30 ORDER BY length DESC'''.format(now))
-    gaps = []
-    for gap in query_db(query):
-        gaps.append((hm_time(gap['start']),hm_time(gap['end']),gap['length'],gap['roomname']))
-    return gaps
 
 @app.route('/')
 def front_page():
-    gaps = gap_populate()
-    return render_template('index.html', gaps=gaps)
+    now = datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")
+    return render_template('index.html', now=now, gaps=query_db('''
+        SELECT roomname,start,end,length FROM gaps 
+        JOIN classrooms on (classrooms.spaceID=gaps.spaceID)
+        WHERE end > '{}' AND length > 30 ORDER BY length DESC'''.format(now))
+    )
 
 @app.route('/search', methods=['POST'])
 def search():
-
+    if request.form:
+        print "form data"
     return redirect(url_for('front_page'))
+
+def readabledate(time):
+    pass
+    #t = datetime.strptime(time, "%Y-%b-%a %H:%M:%S")
+    #return "{} {}, {} - {} {}".format(t.month, t.day, t.year, t.hour, t.minute)
+
+def hmtime(time):
+    ''' returns HH:MM time '''
+    hour = time.split(' ')[1][0:2]
+    minute = time.split(' ')[1][3:5]
+    #TODO get this to recognize format..
+    #t = datetime.strptime(time, "%Y-%b-%a %H:%M:%S")
+    return "{}:{}".format(hour, minute)
+def mins_to_hrs(minutes):
+    h, m = divmod(minutes, 60)
+    return '{}h {}m'.format(h,m)
+
+app.jinja_env.filters['hmtime'] = hmtime
+app.jinja_env.filters['readabledate'] = readabledate
+app.jinja_env.filters['m_to_h'] = mins_to_hrs
 
 if __name__ == '__main__':
     app.debug= True
     app.run()
+
