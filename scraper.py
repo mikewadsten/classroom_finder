@@ -22,10 +22,9 @@ from time import strptime
 import datetime
 import sqlite3
 import urllib2
-import re
 import os
 
-from lib.campus import constructURL
+from lib.utils import constructURL, get_space_id
 
 today = datetime.date.today()
 SHORTEST_GAP_TIME = 15
@@ -110,11 +109,6 @@ def init():
             if (gap_length > SHORTEST_GAP_TIME):
                 insert_gap(sid, s_time, e_time, gap_length)
     conn.commit()
-
-def get_space_id(_string):
-    ''' simple wrapper for 'javascript:spaceInfo(#)' pattern '''
-    pattern = re.compile("\([^)]+\)")
-    return re.search(pattern, _string).group()[1:-1]
 
 
 def get_gap_times(times):
