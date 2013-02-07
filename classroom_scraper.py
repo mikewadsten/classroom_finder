@@ -43,9 +43,9 @@ def init():
     else:
         soup = BeautifulSoup(open("test/dump_classrooms.html"), parser)
 
-    rows = soup.table.tbody.findAll('tr')
+    rows = soup.table.tbody.findAll('tr', class_=re.compile("even_row|odd_row"))
     # dirty hack, we seem to get a duplicate final row
-    for row in rows[:-1]:
+    for row in rows:
         try:
             classroom_name = row.find('a', {'class', 'roomInfo'}).get_text()
             url_search = row.find('a', {'class', 'roomInfo'})
