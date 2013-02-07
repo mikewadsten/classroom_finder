@@ -8,13 +8,16 @@ body {
 .clear {
   clear:both
 }
+#pageinfo {
+  text-align:center;
+}
+
 span {
-  padding: 6px;
   padding-left: 10px;
   float:left;
   width:32%;
-  border-right: solid 2px #eee;
-  font-size:1.25em;
+  border-right: solid 2px #333;
+  font-size:105%;
 }
 span#start,
 span#end,
@@ -23,10 +26,10 @@ span#length {
 }
 
 .even {
-  background-color:#999
+  background-color:#DDD
 }
 #gaps {
   padding:6px;
-  background-color: #777;
+  background-color: #FFF;
 }
 

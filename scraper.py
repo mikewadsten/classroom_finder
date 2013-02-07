@@ -22,10 +22,9 @@ from time import strptime
 import datetime
 import sqlite3
 import urllib2
-import re
 import os
 
-from lib.campus import constructURL
+from lib.utils import constructURL, get_space_id
 
 today = datetime.date.today()
 SHORTEST_GAP_TIME = 15
@@ -44,8 +43,8 @@ def init_db():
 #def insert_gaps(query_list):
 #    db.executemany()
 
-def insert_gap(room, start, end, length):
-    query = "INSERT INTO gaps (room,start,end,length) VALUES ('{}', '{}', '{}', {})".format(room,start,end,length)
+def insert_gap(spaceID, start, end, length):
+    query = "INSERT INTO gaps (spaceID,start,end,length) VALUES ('{}', '{}', '{}', {})".format(spaceID,start,end,length)
     db.execute(query)
     # how do we commit at the end instead of after every insert
     #conn.commit()
@@ -97,25 +96,19 @@ def init():
             f_end_time = strptime(end_time, "%I:%M %p")
             e_time = datetime.datetime(today.year, today.month, today.day, \
                     f_end_time.tm_hour, f_end_time.tm_min)
-            #events dict, key=room, value=[start time, end time]
+            #events dict, key=spaceID, value=[start time, end time]
             times.append((s_time, e_time))
         events[sid] = times
 
     # insert gaps
-    '''
-    for room, times in events.items():
-        print "Inserting " + room
+    for sid, times in events.items():
+        print "Inserting " + sid
         gap_times = get_gap_times(times)
         for s_time, e_time in gap_times:
             gap_length = _gap(s_time, e_time)
             if (gap_length > SHORTEST_GAP_TIME):
-                insert_gap(room, s_time, e_time, gap_length)
+                insert_gap(sid, s_time, e_time, gap_length)
     conn.commit()
-    '''
-
-def get_space_id(_string):
-    pattern = re.compile("\([^)]+\)")
-    return re.search(pattern, _string).group()[1:-1]
 
 
 def get_gap_times(times):
