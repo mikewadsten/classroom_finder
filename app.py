@@ -1,9 +1,10 @@
+from flask import Flask, request, url_for, redirect, \
+             render_template, g
+from datetime import datetime
 import sqlite3
 
-from flask import Flask, request, g, render_template
 app = Flask(__name__)
 DATABASE = 'database.db'
-from datetime import datetime
 
 def connect_db():
     return sqlite3.connect(DATABASE)
@@ -46,12 +47,15 @@ def gap_populate():
         gaps.append((hm_time(gap['start']),hm_time(gap['end']),gap['length'],gap['roomname']))
     return gaps
 
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/')
 def front_page():
-    if request.method == 'POST':
-        print request.data
     gaps = gap_populate()
     return render_template('index.html', gaps=gaps)
+
+@app.route('/search', methods=['POST'])
+def search():
+
+    return redirect(url_for('front_page'))
 
 if __name__ == '__main__':
     app.debug= True

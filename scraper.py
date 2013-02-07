@@ -118,7 +118,7 @@ def get_gap_times(times):
     '''
     # buidings open at 8:00 and close at 10:00
     prev_event = (None, datetime.datetime(today.year, today.month, today.day, 8, 0))
-    build_close = (datetime.datetime(today.year, today.month, today.day, 22, 0), None)
+    build_close = (datetime.datetime(today.year, today.month, today.day, 22, 30), None)
 
     gap_times = []
     for event in times:
