@@ -4,6 +4,42 @@
   <meta http-equiv="content-type" content="text/html; charset=utf-8">
   <link rel="stylesheet" href="static/css/style.css" type="text/css" media="screen, projection">
   <title>UMN Classroom Finder</title>
+
+  <script type="text/javascript">
+    var request
+
+    /* Called by clicking gap elements.
+     * Submits ajax request and sets up future onclick events */
+    function show_spaceinfo(gap_ele) {
+        var spaceID = gap_ele.id.split("-")[1]
+        ajax_spaceinfo(spaceID)
+
+        gap_ele.onclick = function() {
+          var jgap_ele = $(gap_ele)
+          jgap_ele.children(".spaceinfo").slideToggle("300")
+        }
+    }
+    
+    
+    /* Submit AJAX request for retrieving the spaceinfo div element */
+    function ajax_spaceinfo(spaceID) {
+      postdata = "spaceID=" + spaceID
+
+      request = $.ajax({
+        url: "/spaceinfo",
+        type: "POST",
+        data: postdata,
+        success: function(response) {
+          var gap = $("#gap-" + spaceID)
+          gap.append(response)
+        },
+        error: function(response) {
+          alert('failure: ' + response)
+        }
+      })
+    }
+    
+  </script>
 </head>
 <body>
   <div id="pageinfo">
@@ -27,7 +63,7 @@
   </form>
 
   <p>Showing results for {{now}}</p>
-  <div id='gaps'>
+  <div id='gaps' >
     {% if gaps %}
     <span id='room'><h5>Room</h5></span>
     <span id='start'><h5>Start Time</h5></span>
@@ -37,9 +73,9 @@
     <hr>
       {% for gap in gaps %}
       {% if loop.index is even %}
-        <div class="gap even">
+      <div id="gap-{{ gap.spaceID }}" class="gap even" onclick="show_spaceinfo(this);">
       {% else %}
-        <div class="gap odd">
+      <div id="gap-{{ gap.spaceID }}" class="gap odd" onclick="show_spaceinfo(this)">
       {% endif %}
         <span id='room'>{{ gap.roomname }}</span>
         <span id='start'>{{ gap.start|hmtime }}</span>
@@ -55,6 +91,6 @@
 
   </div>
 </div><!-- end container -->
-<!--<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script> -->
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 </body>
 </html>

@@ -36,7 +36,7 @@ def front_page():
     now = datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")
     return render_template('index.html', now=now, 
         gaps=query_db('''
-            SELECT roomname,start,end,length FROM gaps 
+            SELECT roomname,start,end,length,gaps.spaceID FROM gaps 
             JOIN classrooms on (classrooms.spaceID=gaps.spaceID)
             WHERE end > '{}' AND length > 30 ORDER BY length DESC'''.format(now) )
         )
@@ -53,6 +53,15 @@ def search():
             WHERE end > '{}' AND length > 30 
             AND roomname LIKE '%{}%' '''.format(now, request.form['building'])
     return render_template('index.html', now=now,  gaps=query_db(query))
+
+@app.route('/spaceinfo', methods=['POST'])
+def space_info():
+    spaceID = request.form['spaceID']
+    query = '''
+        SELECT roomname,capacity FROM classrooms
+        WHERE classrooms.spaceID='{}' '''.format(spaceID)
+    info = (query_db(query))[0]
+    return render_template('classroom_info.html', info=info)
 
 def readabledate(time):
     t = datetime.strptime(time, "%Y-%m-%d %H:%M:%S")
