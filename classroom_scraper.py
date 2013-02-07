@@ -2,45 +2,55 @@
 '''
 project: classroom_finder
 file: classroom_scraper.py
-purpose: this script will generate a database of classrooms and their given information to use later
 '''
-import os
-import sqlite3
 from bs4 import BeautifulSoup
+import sqlite3
 import datetime
+import urllib2
+import os
 today = datetime.date.today()
+url = "http://www.classroom.umn.edu/roomsearch/results.php?building=&room_number="\
+        "&seating_capacity=&seat_type=&campus=&pagesize=9999&Submit1=Search"
+
 
 conn = sqlite3.connect('database.db')
 db = conn.cursor()
 
-def create_classroomstable():
-    try:
-        db.execute('''DROP TABLE classrooms''')
-    except:
-        pass
-    db.execute('''CREATE TABLE classrooms
-                (roomid INT, roomname STRING, capacity INT)''')
+def init_db():
+    db.execute('''DROP TABLE IF EXISTS gaps''')
+    db.execute('''CREATE TABLE classrooms (spaceID INT, roomname STRING, capacity INT)''')
 
-def init(source):
+def insert_classroom(spaceID,name,capacity):
+    query = "INSERT INTO classrooms VALUES ({},\"{}\",{})".format(
+            spaceID, name, capacity)
+    db.execute(query)
+
+def init():
     ''' gather html data and generate the classroom database from it
         @param source - string of URL or FILE to grab data from
     '''
     parser = "html.parser"
-
-    if source.endswith('.html'):
-        _file = True
-    if _file:
-        soup = BeautifulSoup(open(source), parser)
-    else:
+    if os.environ.get("SCRAPER_ENV") == 'production':
+        #TODO url for data source
+        usock = urllib2.urlopen(url)
+        source = usock.read()
+        usock.close()
         soup = BeautifulSoup(source)
+    else:
+        soup = BeautifulSoup(open("classroom_dump.html"), parser)
 
-    content = soup.find('div', {'id': 'ContentBox'})
+    rows = soup.table.tbody.findAll('tr')
+    for row in rows:
+        for column in row:
+            print "~~~~~~~~~~~~~~~COLUMN INFO~~~~~~~~~~~~~~~"
+            print column
+        print "~~~~~~~~~~~~~~~ROW~~~~~~~~~~~~~~~~~~~~~`"
+        print row
+
+def construct_url(sid):
+    ''' this is the individual room page. We may or may not need it'''
+    return "http://wvprd.ocm.umn.edu/gpcwv/wv3_servlet/urd/run/" \
+        + "wv_space.Detail?RoomID={}".format(sid)
 
 if __name__ == '__main__':
-    print "This script will generate a table in the db of classrooms from the classroom website (not the webviewer) with all the goodies (markerboard? capacity?)"
-    print "tippy tip tippenein"
-    #create_classroomstable()
-    roomid = "3"; roomname = "BallLicker Hall Room 23"; capacity = "60";
-    query = "INSERT INTO classrooms VALUES ({},\"{}\",{})".format(roomid, roomname, capacity)
-    db.execute(query)
-    print query
+    init()
