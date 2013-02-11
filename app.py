@@ -2,10 +2,27 @@ from flask import Flask, request, url_for, redirect, \
              render_template, g
 from datetime import datetime
 import sqlite3
+from lib.utils import int_to_month
 
 app = Flask(__name__)
 DATABASE = 'database.db'
 
+# jinja datetime methods
+def readabledate(time):
+    t = datetime.strptime(time, "%Y-%m-%d %H:%M:%S")
+    return "{} on {} {}, {}".format(
+            hmtime(time), int_to_month(t.month), t.day, t.year)
+
+def hmtime(time):
+    ''' returns HH:MM time '''
+    t = datetime.strptime(time, "%Y-%m-%d %H:%M:%S")
+    return '%d:%02d'%(t.hour, t.minute)
+
+def mins_to_hrs(minutes):
+    h, m = divmod(minutes, 60)
+    return '{}h {}m'.format(h,m)
+
+# Database
 def connect_db():
     return sqlite3.connect(DATABASE)
 
@@ -30,7 +47,7 @@ def query_db(query, args=(), one=False):
                for idx, value in enumerate(row)) for row in cur.fetchall()]
     return (rv[0] if rv else None) if one else rv
 
-
+#routes
 @app.route('/')
 def front_page():
     now = datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")
@@ -44,15 +61,13 @@ def front_page():
 @app.route('/search', methods=['POST'])
 def search():
     now = datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")
-    # This could be a redirect to front_page, however
-    # not sure how to pass a new set of gaps
     if request.form['building']:
         query = ''' 
             SELECT roomname,start,end,length FROM gaps
             JOIN classrooms on (classrooms.spaceID=gaps.spaceID)
             WHERE end > '{}' AND length > 30 
             AND roomname LIKE '%{}%' '''.format(now, request.form['building'])
-    return render_template('index.html', now=now,  gaps=query_db(query))
+    return render_template('index.html', now=now, gaps=query_db(query))
 
 @app.route('/spaceinfo', methods=['POST'])
 def space_info():
@@ -63,18 +78,6 @@ def space_info():
     info = (query_db(query))[0]
     return render_template('classroom_info.html', info=info)
 
-def readabledate(time):
-    t = datetime.strptime(time, "%Y-%m-%d %H:%M:%S")
-    return "{} {}, {} - {} {}".format(t.month, t.day, t.year, t.hour, t.minute)
-
-def hmtime(time):
-    ''' returns HH:MM time '''
-    t = datetime.strptime(time, "%Y-%m-%d %H:%M:%S")
-    return "{}:{}".format(t.hour, t.minute)
-
-def mins_to_hrs(minutes):
-    h, m = divmod(minutes, 60)
-    return '{}h {}m'.format(h,m)
 
 app.jinja_env.filters['hmtime'] = hmtime
 app.jinja_env.filters['readabledate'] = readabledate

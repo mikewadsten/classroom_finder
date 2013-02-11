@@ -62,7 +62,7 @@
     <input type='submit', value='submit', action='/search'>
   </form>
 
-  <p>Showing results for {{now}}</p>
+  <p>Showing results for {{now|readabledate}}</p>
   <div id='gaps' >
     {% if gaps %}
     <span id='room'><h5>Room</h5></span>
@@ -86,7 +86,7 @@
       {% endfor %}
       {% else %}
         <p>There is no data available. Either it's late and the buildings are closed, 
-        or something went wrong.</p>
+        or your search turned up nothing. </p>
       {% endif %}
 
   </div>
