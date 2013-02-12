@@ -47,6 +47,10 @@
     <p>You can help add functionality by forking and contributing 
         <a href="http://github.com/tippenein/classroom_finder">here</a>
     </p>
+    <p><em>Note</em>: length column shows the amount of time remaining as of 
+        {{now|readabledate}}
+    </p>
+
   </div>
   <div class='container'>
   <form action='/search', method='post'>
@@ -62,7 +66,6 @@
     <input type='submit', value='submit', action='/search'>
   </form>
 
-  <p>Showing results for {{now|readabledate}}</p>
   <div id='gaps' >
     {% if gaps %}
     <span id='room'><h5>Room</h5></span>
