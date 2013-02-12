@@ -69,6 +69,22 @@ def search():
             AND roomname LIKE '%{}%' '''.format(now, request.form['building'])
     return render_template('index.html', now=now, gaps=query_db(query))
 
+@app.route('/available_now', methods=['POST', 'GET'])
+def available_now():
+    now = datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")
+    query = '''
+            SELECT roomname, start, end, length, gaps.spaceID FROM gaps
+            JOIN classrooms on (classrooms.spaceID=gaps.spaceID)
+            WHERE end > '{}' AND start < '{}' AND length > 30'''.format(now, now)
+    gaps = query_db(query)
+
+    # Update the displayed gap length to be (gap.end - now)
+    for gap in gaps:
+        avail_length = datetime.strptime(gap['end'], "%Y-%m-%d %H:%M:%S") - datetime.now()
+        gap['length'] = avail_length.seconds/60
+    gaps.sort(reverse=True)
+    return render_template('index.html', now=now, gaps=gaps)
+
 @app.route('/spaceinfo', methods=['POST'])
 def space_info():
     spaceID = request.form['spaceID']
