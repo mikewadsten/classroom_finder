@@ -22,6 +22,11 @@ def mins_to_hrs(minutes):
     h, m = divmod(minutes, 60)
     return '{}h {}m'.format(h,m)
 
+def room_url(sid):
+    ''' this is the individual room page. We may or may not need it'''
+    return "http://wvprd.ocm.umn.edu/gpcwv/wv3_servlet/urd/run/" \
+        + "wv_space.Detail?RoomID={}".format(sid)
+
 # Database
 def connect_db():
     return sqlite3.connect(DATABASE)
@@ -87,13 +92,17 @@ def search():
 def space_info():
     spaceID = request.form['spaceID']
     query = '''
-        SELECT roomname,capacity FROM classrooms
-        WHERE classrooms.spaceID='{}' '''.format(spaceID)
-    info = (query_db(query))[0]
+        SELECT roomname,capacity,seat_type,projector,dvd,vcr,doc,chalk,marker,alc,spaceID
+        FROM classrooms WHERE classrooms.spaceID='{}' '''.format(spaceID)
+    try:
+        info = (query_db(query))[0]
+    except IndexError:
+        info = query_db(query)
     return render_template('classroom_info.html', info=info)
 
 
 app.jinja_env.filters['hmtime'] = hmtime
+app.jinja_env.filters['room_url'] = room_url
 app.jinja_env.filters['readabledate'] = readabledate
 app.jinja_env.filters['m_to_h'] = mins_to_hrs
 

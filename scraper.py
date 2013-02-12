@@ -44,7 +44,8 @@ def init_db():
 #    db.executemany()
 
 def insert_gap(spaceID, start, end, length):
-    query = "INSERT INTO gaps (spaceID,start,end,length) VALUES ('{}', '{}', '{}', {})".format(spaceID,start,end,length)
+    query = '''INSERT INTO gaps (spaceID,start,end,length) VALUES 
+            ('{}', '{}', '{}', {})'''.format(spaceID,start,end,length)
     db.execute(query)
     # how do we commit at the end instead of after every insert
     #conn.commit()

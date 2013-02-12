@@ -22,10 +22,15 @@ db = conn.cursor()
 
 def init_db():
     db.execute('''DROP TABLE IF EXISTS classrooms''')
-    db.execute('''CREATE TABLE classrooms (spaceID INT, roomname STRING, capacity INT, seat_type STRING, projector STRING, dvd STRING, vcr STRING, doc STRING, chalk STRING, marker STRING, alc STRING)''')
+    db.execute('''CREATE TABLE classrooms
+        (spaceID INT, roomname STRING, capacity INT, seat_type STRING,
+        projector STRING, dvd STRING, vcr STRING, doc STRING, chalk STRING,
+        marker STRING, alc STRING)''')
 
 def insert_classroom(spaceID,name,capacity,seat_type,proj,dvd,vcr,doc,chalk,marker,alc):
-    query = "INSERT INTO classrooms VALUES (\"{}\",\"{}\",\"{}\",\"{}\",\"{}\",\"{}\",\"{}\",\"{}\",\"{}\",\"{}\",\"{}\")".format(spaceID,name,capacity,seat_type,proj,dvd,vcr,doc,chalk,marker,alc)
+    query = '''INSERT INTO classrooms VALUES
+        ("{}","{}","{}","{}","{}","{}","{}","{}","{}","{}","{}")'''.format(
+        spaceID, name, capacity, seat_type, proj, dvd, vcr, doc, chalk, marker, alc)
     db.execute(query)
 
 def init():
@@ -46,7 +51,6 @@ def init():
 
     rows = soup.table.tbody.findAll('tr', class_=re.compile("even_row|odd_row"))
     for row in rows:
-        print "~~~~~~~~~~~~~~~~ NEW CLASSROOM ~~~~~~~~~~~~~~~~"
         try:
             url_search = row.find('a', {'class', 'roomInfo'})
             classroom_id = re.search('(?<=RoomID=)\w+', url_search.get('href')).group(0)
@@ -55,34 +59,31 @@ def init():
         except:
             raise ScrapeError("search for html data failed")
 
-        classroom_name = features[0].get_text()
-        classroom_capacity = features[1].get_text()
-        classroom_seat_type = features[2].get_text()
-        classroom_proj = hasFeature(features[3])
-        classroom_dvd = hasFeature(features[4])
-        classroom_vcr = hasFeature(features[5])
-        classroom_doc = hasFeature(features[6])
-        classroom_chalk = hasFeature(features[7])
-        classroom_marker = hasFeature(features[8])
-        classroom_alc = hasFeature(features[9])
+        _name = features[0].get_text()
+        _capacity = features[1].get_text()
+        _seat_type = features[2].get_text()
+        # bools
+        _proj = hasFeature(features[3])
+        _dvd = hasFeature(features[4])
+        _vcr = hasFeature(features[5])
+        _doc = hasFeature(features[6])
+        _chalk = hasFeature(features[7])
+        _marker = hasFeature(features[8])
+        _alc = hasFeature(features[9])
 
-
-        insert_classroom(classroom_id, classroom_name, classroom_capacity, classroom_seat_type, classroom_proj, classroom_dvd, classroom_vcr, classroom_doc, classroom_chalk, classroom_marker, classroom_alc)
+        insert_classroom( classroom_id, _name, _capacity,
+                _seat_type, _proj, _dvd, _vcr,
+                _doc, _chalk, _marker, _alc )
     conn.commit()
 
 class ScrapeError(Exception):
     pass
 
 def hasFeature(feature):
-    print feature
     if feature.get('class')[0]=='checkmark':
         return "yes"
     return "no"
 
-def construct_url(sid):
-    ''' this is the individual room page. We may or may not need it'''
-    return "http://wvprd.ocm.umn.edu/gpcwv/wv3_servlet/urd/run/" \
-        + "wv_space.Detail?RoomID={}".format(sid)
 
 if __name__ == '__main__':
     init()
