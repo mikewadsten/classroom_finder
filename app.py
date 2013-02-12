@@ -75,7 +75,7 @@ def available_now():
     query = '''
             SELECT roomname, start, end, length, gaps.spaceID FROM gaps
             JOIN classrooms on (classrooms.spaceID=gaps.spaceID)
-            WERE end > '{}' AND start < '{}' AND length > 30
+            WHERE end > '{}' AND start < '{}' AND length > 30
             '''.format(now, now)
     gaps = query_db(query)
 
