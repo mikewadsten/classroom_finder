@@ -55,18 +55,29 @@ def query_db(query, args=(), one=False):
 #routes
 
 @app.route('/', methods=['POST', 'GET'])
-def index(gaps=None):
+def index():
     now = datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")
-    # possibly just pass the search results to index() and rerender
-    if gaps:
-        pass
-    else:
-        query = '''
-                SELECT roomname, start, end, length, gaps.spaceID FROM gaps
-                JOIN classrooms on (classrooms.spaceID=gaps.spaceID)
-                WHERE end > '{}' AND start < '{}' AND length > 30
-                '''.format(now, now)
-        gaps = query_db(query)
+    query = '''
+            SELECT roomname, start, end, length, gaps.spaceID FROM gaps
+            JOIN classrooms on (classrooms.spaceID=gaps.spaceID)
+            WHERE end > '{}' AND length > 30
+            ORDER BY start ASC
+            '''.format(now)
+    gaps = query_db(query)
+
+    # Update the displayed gap length to be (gap.end - now)
+    return render_template('index.html', now=now, gaps=gaps)
+
+
+@app.route('/now', methods=['POST', 'GET'])
+def available_now():
+    now = datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")
+    query = '''
+            SELECT roomname, start, end, length, gaps.spaceID FROM gaps
+            JOIN classrooms on (classrooms.spaceID=gaps.spaceID)
+            WHERE end > '{}' AND start > '{}' AND length > 30
+            '''.format(now, now)
+    gaps = query_db(query)
 
     # Update the displayed gap length to be (gap.end - now)
     for gap in gaps:
@@ -81,10 +92,10 @@ def search():
     now = datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")
     if request.form['building'] != '':
         query = '''
-            SELECT roomname,start,end,length FROM gaps
+            SELECT roomname,start,end,length, gaps.spaceID FROM gaps
             JOIN classrooms on (classrooms.spaceID=gaps.spaceID)
-            WHERE end > '{}' AND start < '{}' AND length > 30 
-            AND roomname LIKE '%{}%' '''.format(now, now, request.form['building'])
+            WHERE end > '{}' AND length > 30 
+            AND roomname LIKE '%{}%' '''.format(now, request.form['building'])
     return render_template('index.html', now=now, gaps=query_db(query))
 
 
