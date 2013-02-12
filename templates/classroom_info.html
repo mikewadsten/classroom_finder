@@ -1,20 +1,14 @@
 <div class="spaceinfo" display="">
-  <h3>{{ info.roomname }}</h3>
-  <b>Capacity</b> = {{ info.capacity }}
-  <b>Seat type</b> = {{ info.seat_type }}
-  <br>
-  <div>
-    <b>Projector:</b> {{info.projector}}
-    <b>DVD:</b> {{info.dvd}}
-    <b>VCR:</b> {{info.vcr}}
-    <b>Document Camera</b> {{info.doc}}
-  <br>
+    <h3>{{ info.roomname }}</h3>
+    <b>Capacity</b> = {{ info.capacity }}
+    <br>
+    <b>Seat type</b> = {{ info.seat_type }}
+    <br>
     <b>Chalkboard:</b> {{info.chalk}}
+    <br>
     <b>Whiteboard:</b> {{info.marker}}
-    <b>Alc:</b> {{info.alc}}
     <br>
     <a href={{info.spaceID|room_url}}, target="_blank">Link to images</a>
-  </div>
 </div>
 <div class="clear"></div>
 

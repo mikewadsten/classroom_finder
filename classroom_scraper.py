@@ -14,8 +14,6 @@ today = datetime.date.today()
 url = "http://www.classroom.umn.edu/roomsearch/results.php?building=&room_number="\
         "&seating_capacity=&seat_type=&campus=&pagesize=9999&Submit1=Search"
 
-classrooms = {}
-feature_headers = ['proj','dvd','vcr','doc','chalk','marker','alc']
 
 conn = sqlite3.connect('database.db')
 db = conn.cursor()
@@ -62,14 +60,21 @@ def init():
         _name = features[0].get_text()
         _capacity = features[1].get_text()
         _seat_type = features[2].get_text()
-        # bools
+        # bools - index
+        # Projector - 3
+        # DVD - 4
+        # VCR - 5
+        # Document Projector - 6
+        # Active Learning Classroom - 9
         _proj = hasFeature(features[3])
         _dvd = hasFeature(features[4])
-        _vcr = hasFeature(features[5])
-        _doc = hasFeature(features[6])
-        _chalk = hasFeature(features[7])
-        _marker = hasFeature(features[8])
-        _alc = hasFeature(features[9])
+        _vcr = hasFeature(features[6])
+        _doc = hasFeature(features[7])
+        _chalk = hasFeature(features[8])
+        _marker = hasFeature(features[9])
+        _alc = hasFeature(features[10])
+        for feature in ( classroom_id, _name, _capacity, _seat_type, _proj, _dvd, _vcr, _doc, _chalk, _marker, _alc ):
+            print feature
 
         insert_classroom( classroom_id, _name, _capacity,
                 _seat_type, _proj, _dvd, _vcr,
