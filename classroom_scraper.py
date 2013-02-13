@@ -73,8 +73,6 @@ def init():
         _chalk = hasFeature(features[8])
         _marker = hasFeature(features[9])
         _alc = hasFeature(features[10])
-        for feature in ( classroom_id, _name, _capacity, _seat_type, _proj, _dvd, _vcr, _doc, _chalk, _marker, _alc ):
-            print feature
 
         insert_classroom( classroom_id, _name, _capacity,
                 _seat_type, _proj, _dvd, _vcr,
