@@ -118,7 +118,6 @@ def search():
             WHERE end > '{1}' AND length > 30
             ORDER BY start ASC
             '''.format(campus,now)
-    print campus, request.form['search']
     return render_template('results.html', now=now, gaps=query_db(query))
 
 
