@@ -14,10 +14,13 @@ def constructURL(date, campus):
     '''
     eastCode=947166
     westCode=947169
+    stpaulCode=947171
     if campus == "east":
         code = eastCode
     if campus == "west":
         code = westCode
+    if campus == "stpaul":
+        code = stpaulCode
 
     return "http://wvprd.ocm.umn.edu/gpcwv/wv3_servlet/urd/run/wv_space." + \
                "DayList?spfilter={},spdt={},lbdviewmode=list".format(code,pad(date))
