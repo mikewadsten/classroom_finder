@@ -60,12 +60,7 @@ def init():
         _name = features[0].get_text()
         _capacity = features[1].get_text()
         _seat_type = features[2].get_text()
-        # bools - index
-        # Projector - 3
-        # DVD - 4
-        # VCR - 5
-        # Document Projector - 6
-        # Active Learning Classroom - 9
+        # bools
         _proj = hasFeature(features[3])
         _dvd = hasFeature(features[4])
         _vcr = hasFeature(features[6])

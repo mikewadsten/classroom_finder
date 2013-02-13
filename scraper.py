@@ -28,6 +28,7 @@ from lib.utils import constructURL, get_space_id
 
 today = datetime.date.today()
 SHORTEST_GAP_TIME = 15
+campus_list = ("east","west","stpaul")
 
 '''We no longer want to rebuild the database each time as the classrooms table will
 now hold more permanent data (populated by a separate script, classroom_scraper.py
@@ -36,34 +37,31 @@ Instead, init_db() now drops and recreates the gaps table'''
 conn = sqlite3.connect('database.db')
 db = conn.cursor()
 
-def init_db():
-    db.execute('''DROP TABLE IF EXISTS gaps''')
-    db.execute('''CREATE TABLE gaps (spaceID INT, start DATE, end DATE, length INTEGER)''')
+def init_db(campus):
+    db.execute('''DROP TABLE IF EXISTS {}'''.format(campus))
+    db.execute('''CREATE TABLE {} (spaceID INT, start DATE, 
+                end DATE, length INTEGER)'''.format(campus))
 
-#def insert_gaps(query_list):
-#    db.executemany()
-
-def insert_gap(spaceID, start, end, length):
-    query = '''INSERT INTO gaps (spaceID,start,end,length) VALUES 
-            ('{}', '{}', '{}', {})'''.format(spaceID,start,end,length)
+def insert_gap(campus, spaceID, start, end, length):
+    query = '''INSERT INTO {} (spaceID,start,end,length) VALUES 
+            ('{}', '{}', '{}', {})
+            '''.format(campus, spaceID, start, end, length)
     db.execute(query)
-    # how do we commit at the end instead of after every insert
-    #conn.commit()
 
 #TODO grab all sources, right now it only does EastBank from the url provided in lib/campus.py
-def init():
+def init(campus):
     ''' gather html data and generate the event dictionary from it
         @param campus - which campus to initialize
     '''
 
-    init_db()
+    init_db(campus)
 
     #  if running this as a script w/ python version < 2.7.3, use html5lib via pip install
     parser = "html.parser"
 
     # run with SCRAPER_ENV=production if you want fresh data
     if os.environ.get("SCRAPER_ENV") == "production":
-        usock = urllib2.urlopen(constructURL(today, "east"))
+        usock = urllib2.urlopen(constructURL(today, campus))
         source = usock.read()
         usock.close()
         soup = BeautifulSoup(source)
@@ -107,7 +105,7 @@ def init():
         for s_time, e_time in gap_times:
             gap_length = _gap(s_time, e_time)
             if (gap_length > SHORTEST_GAP_TIME):
-                insert_gap(sid, s_time, e_time, gap_length)
+                insert_gap(campus, sid, s_time, e_time, gap_length)
     print "Success"
     conn.commit()
 
@@ -135,5 +133,6 @@ def _gap(_from, _to):
     return (_to - _from).seconds/60
 
 if __name__ == '__main__':
-    init()
+    for campus in campus_list:
+        init(campus)
 

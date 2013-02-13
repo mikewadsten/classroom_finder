@@ -57,12 +57,17 @@ def query_db(query, args=(), one=False):
 @app.route('/', methods=['POST', 'GET'])
 def index():
     now = datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")
+    try:
+        campus = request.form['campus']
+    except KeyError:
+        campus = 'east'
+
     query = '''
-            SELECT roomname, start, end, length, gaps.spaceID FROM gaps
-            JOIN classrooms on (classrooms.spaceID=gaps.spaceID)
-            WHERE end > '{}' AND length > 30
+            SELECT roomname, start, end, length, {0}.spaceID FROM {0}
+            JOIN classrooms on (classrooms.spaceID={0}.spaceID)
+            WHERE end > '{1}' AND length > 30
             ORDER BY start ASC
-            '''.format(now)
+            '''.format(campus,now)
     gaps = query_db(query)
 
     # Update the displayed gap length to be (gap.end - now)
@@ -72,11 +77,16 @@ def index():
 @app.route('/now', methods=['POST', 'GET'])
 def available_now():
     now = datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")
+    try:
+        campus = request.form['campus']
+    except KeyError:
+        campus = 'east'
+
     query = '''
-            SELECT roomname, start, end, length, gaps.spaceID FROM gaps
-            JOIN classrooms on (classrooms.spaceID=gaps.spaceID)
-            WHERE end > '{}' AND start < '{}' AND length > 30
-            '''.format(now, now)
+            SELECT roomname, start, end, length, {0}.spaceID FROM {0}
+            JOIN classrooms on (classrooms.spaceID={0}.spaceID)
+            WHERE end > '{1}' AND start < '{1}' AND length > 30
+            '''.format(campus, now)
     gaps = query_db(query)
 
     # Update the displayed gap length to be (gap.end - now)
@@ -90,13 +100,26 @@ def available_now():
 @app.route('/search', methods=['POST', 'GET'])
 def search():
     now = datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")
-    if request.form['building'] != '':
+    try:
+        campus = request.form['campus']
+    except KeyError:
+        campus = 'east'
+
+    if request.form['search'] != '':
         query = '''
-            SELECT roomname,start,end,length, gaps.spaceID FROM gaps
-            JOIN classrooms on (classrooms.spaceID=gaps.spaceID)
-            WHERE end > '{}' AND length > 30 
-            AND roomname LIKE '%{}%' '''.format(now, request.form['building'])
-    return render_template('index.html', now=now, gaps=query_db(query))
+            SELECT roomname,start,end,length, {0}.spaceID FROM {0}
+            JOIN classrooms on (classrooms.spaceID={0}.spaceID)
+            WHERE end > '{1}' AND length > 30 
+            AND roomname LIKE '%{2}%' '''.format(campus, now, request.form['search'])
+    elif request.form['search'] == '':
+        query = '''
+            SELECT roomname, start, end, length, {0}.spaceID FROM {0}
+            JOIN classrooms on (classrooms.spaceID={0}.spaceID)
+            WHERE end > '{1}' AND length > 30
+            ORDER BY start ASC
+            '''.format(campus,now)
+    print campus, request.form['search']
+    return render_template('results.html', now=now, gaps=query_db(query))
 
 
 @app.route('/spaceinfo', methods=['POST'])

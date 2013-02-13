@@ -20,6 +20,23 @@
         }
     }
     
+    function show_results() {
+        var index = document.form.campus.selectedIndex
+        var building = document.form.building.value
+        postdata = "campus=" + campus[index].value + "&search=" + building
+        request = $.ajax({
+        url: "/search",
+        type: "POST",
+        data: postdata,
+        success: function(response) {
+          var gap = document.getElementById('gaps')
+          gap.innerHTML = response
+        },
+        error: function(response) {
+          alert('failure: ' + response)
+        }
+      })
+    }
     
     /* Submit AJAX request for retrieving the spaceinfo div element */
     function ajax_spaceinfo(spaceID) {
@@ -53,45 +70,21 @@
 
   </div>
   <div class='container'>
-  <form action='/search', method='post'>
-    <!--
+  <form name='form'>
     Select Campus: 
-    <select>
-      <option value="east">East Bank</option><br>
-      <option value="west">West Bank</option><br>
+    <select id='campus', name='campus', onchange='show_results()'>
+      <option value='east', name='east'>East Bank</option><br>
+      <option value='west', name='west'>West Bank</option><br>
+      <option value='stpaul', name='stpaul'>St. Paul</option><br>
     </select><br>
-    -->
+
     Building: <input type='text', name='building', placeholder='building'>
     <div class='clear'></div>
-    <input type='submit', value='submit', action='/search'>
+    <input type='button', value='submit', onclick='show_results()'>
   </form>
 
-  <div id='gaps' >
-    {% if gaps %}
-    <span id='room'><h5>Room</h5></span>
-    <span id='start'><h5>Start Time</h5></span>
-    <span id='end'><h5>End Time</h5></span>
-    <span id='length'><h5>Length</h5></span>
-    <div class='clear'></div>
-    <hr>
-      {% for gap in gaps %}
-      {% if loop.index is even %}
-      <div id="gap-{{ gap.spaceID }}" class="gap even" onclick="show_spaceinfo(this);">
-      {% else %}
-      <div id="gap-{{ gap.spaceID }}" class="gap odd" onclick="show_spaceinfo(this)">
-      {% endif %}
-        <span id='room'>{{ gap.roomname }}</span>
-        <span id='start'>{{ gap.start|hmtime }}</span>
-        <span id='end'>{{ gap.end|hmtime }}</span>
-        <span id='length'>{{ gap.length|m_to_h }}</span>
-        <div class='clear'></div>
-      </div>
-      {% endfor %}
-      {% else %}
-        <p>There is no data available. Either it's late and the buildings are closed, 
-        or your search turned up nothing. </p>
-      {% endif %}
-
+  <div id='gaps'>
+    {% include 'results.html' %}
   </div>
 </div><!-- end container -->
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
