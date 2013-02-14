@@ -1,7 +1,9 @@
 from flask import Flask, request, url_for, redirect, \
-             render_template, g
+             render_template, g, send_from_directory
 from datetime import datetime
 import sqlite3
+import os
+
 from lib.utils import int_to_month
 
 app = Flask(__name__)
@@ -53,7 +55,10 @@ def query_db(query, args=(), one=False):
     return (rv[0] if rv else None) if one else rv
 
 #routes
-
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory(os.path.join(app.root_path, 'static'),
+                               'favicon.ico', mimetype='image/vnd.microsoft.icon')
 @app.route('/', methods=['POST', 'GET'])
 def index():
     now = datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")
