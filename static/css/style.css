@@ -1,39 +1,69 @@
 body {
-  font-family: "Arial" sans-serif
+  font-family: "Arial" sans-serif;
+  min-width: 480px;
 }
 
 .container {
-  padding:6px;
 }
+
 .clear {
   clear:both
 }
+
 #pageinfo {
   text-align:center;
 }
-.gap:hover {
-  background-color:#986
-}
-span {
-  padding-left: 10px;
-  float:left;
-  width:32%;
-  border-right: solid 2px #333;
-  font-size:105%;
-}
-span#start,
-span#end,
-span#length {
-  width:15%;
+
+.gap {	
 }
 
-.even {
+.gap:hover {
+  background-color: #FFC;
+}
+
+.odd {
   background-color:#DDD
 }
-#gaps {
-  padding:6px;
-  background-color: #FFF;
+
+.column-title {
+	font-weight: bold;
 }
+
+.room-col, .start-col, .end-col, .length-col {
+	float: left;
+	text-align: center;
+	font-size: 24px;
+}
+
+.room-col {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    width: 40%;
+    display: block;
+    overflow: hidden
+}
+
+.start-col {
+	width: 19%;
+}
+
+.end-col {
+	width: 19%;
+}
+
+.length-col {
+	width: 19%;
+}
+
+#gaps {
+}
+
 .spaceinfo {
   padding:6px;
+  font-size: 22px;
+}
+
+h5 {
+	font-size: 18px;
+	text-transform: uppercase;	
 }
