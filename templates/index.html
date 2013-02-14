@@ -78,7 +78,7 @@
       <option value='stpaul', name='stpaul'>St. Paul</option><br>
     </select><br>
 
-    Building: <input type='text', name='building', placeholder='building'>
+    Building: <input type='text', name='building', placeholder='building' onkeydown="if (event.keyCode == 13) { show_results(); return false; }">
     <div class='clear'></div>
     <input type='button', value='submit', onclick='show_results()'>
   </form>
