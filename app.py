@@ -59,6 +59,7 @@ def query_db(query, args=(), one=False):
 def favicon():
     return send_from_directory(os.path.join(app.root_path, 'static'),
                                'favicon.ico', mimetype='image/vnd.microsoft.icon')
+
 @app.route('/', methods=['POST', 'GET'])
 def index():
     now = datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")
@@ -130,7 +131,7 @@ def search():
 def space_info():
     spaceID = request.form['spaceID']
     query = '''
-        SELECT roomname,capacity,seat_type,projector,dvd,vcr,doc,chalk,marker,alc,spaceID
+        SELECT roomname, capacity, seat_type, chalk, marker, spaceID
         FROM classrooms WHERE classrooms.spaceID='{}' '''.format(spaceID)
     try:
         info = (query_db(query))[0]
