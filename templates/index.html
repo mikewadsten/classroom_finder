@@ -23,20 +23,25 @@
     function show_results() {
         var index = document.form.campus.selectedIndex
         var building = document.form.building.value
-        postdata = "campus=" + campus[index].value + "&search=" + building
-        request = $.ajax({
-        url: "/search",
-        type: "POST",
-        data: postdata,
-        success: function(response) {
-          var gap = document.getElementById('gaps')
-          gap.innerHTML = response
-        },
-        error: function(response) {
-          alert('failure: ' + response)
+        if (building == ""){
+            postdata = "campus=" + campus[index].value
         }
-      })
-    }
+        else {
+            postdata = "campus=" + campus[index].value + "&search=" + building
+        }
+            request = $.ajax({
+            url: "/search",
+            type: "POST",
+            data: postdata,
+            success: function(response) {
+              var gap = document.getElementById('gaps')
+              gap.innerHTML = response
+            },
+            error: function(response) {
+              alert('Search failure: ' + response)
+            }
+        })
+      }
     
     /* Submit AJAX request for retrieving the spaceinfo div element */
     function ajax_spaceinfo(spaceID) {
@@ -78,9 +83,8 @@
       <option value='stpaul', name='stpaul'>St. Paul</option><br>
     </select><br>
 
-    Building: <input type='text', name='building', placeholder='building' onkeydown="if (event.keyCode == 13) { show_results(); return false; }">
+    Building: <input type='text', name='building', placeholder='building', onkeyup='show_results()'>
     <div class='clear'></div>
-    <input type='button', value='submit', onclick='show_results()'>
   </form>
 
   <div id='gaps'>

@@ -104,14 +104,16 @@ def search():
         campus = request.form['campus']
     except KeyError:
         campus = 'east'
-
-    if request.form['search'] != '':
+    try:
+        search_terms = request.form['search']
+        print "search data"
         query = '''
             SELECT roomname,start,end,length, {0}.spaceID FROM {0}
             JOIN classrooms on (classrooms.spaceID={0}.spaceID)
             WHERE end > '{1}' AND length > 30 
-            AND roomname LIKE '%{2}%' '''.format(campus, now, request.form['search'])
-    elif request.form['search'] == '':
+            AND roomname LIKE '%{2}%' '''.format(campus, now, search_terms)
+    except KeyError:
+        print "empty search"
         query = '''
             SELECT roomname, start, end, length, {0}.spaceID FROM {0}
             JOIN classrooms on (classrooms.spaceID={0}.spaceID)
