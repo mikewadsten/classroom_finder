@@ -6,28 +6,13 @@ import os
 
 from lib.utils import int_to_month
 
-app = Flask(__name__)
+# configuration -> app.config['DATABASE'] => 'database.db'
 DATABASE = 'database.db'
 
-# jinja datetime methods
-def readabledate(time):
-    t = datetime.strptime(time, "%Y-%m-%d %H:%M:%S")
-    return "{} on {} {}, {}".format(
-            hmtime(time), int_to_month(t.month), t.day, t.year)
-
-def hmtime(time):
-    ''' returns HH:MM time '''
-    t = datetime.strptime(time, "%Y-%m-%d %H:%M:%S")
-    return '%d:%02d'%(t.hour, t.minute)
-
-def mins_to_hrs(minutes):
-    h, m = divmod(minutes, 60)
-    return '{}h {}m'.format(h,m)
-
-def room_url(sid):
-    ''' this is the individual room page. We may or may not need it'''
-    return "http://wvprd.ocm.umn.edu/gpcwv/wv3_servlet/urd/run/" \
-        + "wv_space.Detail?RoomID={}".format(sid)
+# initialize the app
+app = Flask(__name__)
+app.config.from_object(__name__)
+app.config.from_envvar('APP_SETTINGS', silent=True)
 
 # Database
 def connect_db():
@@ -53,6 +38,26 @@ def query_db(query, args=(), one=False):
     rv = [dict((cur.description[idx][0], value)
                for idx, value in enumerate(row)) for row in cur.fetchall()]
     return (rv[0] if rv else None) if one else rv
+
+# jinja datetime methods
+def readabledate(time):
+    t = datetime.strptime(time, "%Y-%m-%d %H:%M:%S")
+    return "{} on {} {}, {}".format(
+            hmtime(time), int_to_month(t.month), t.day, t.year)
+
+def hmtime(time):
+    ''' returns HH:MM time '''
+    t = datetime.strptime(time, "%Y-%m-%d %H:%M:%S")
+    return '%d:%02d'%(t.hour, t.minute)
+
+def mins_to_hrs(minutes):
+    h, m = divmod(minutes, 60)
+    return '{}h {}m'.format(h,m)
+
+def room_url(sid):
+    ''' this is the individual room page. We may or may not need it'''
+    return "http://wvprd.ocm.umn.edu/gpcwv/wv3_servlet/urd/run/" \
+        + "wv_space.Detail?RoomID={}".format(sid)
 
 #routes
 @app.route('/favicon.ico')
