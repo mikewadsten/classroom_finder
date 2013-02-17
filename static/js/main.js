@@ -12,7 +12,8 @@ function show_spaceinfo(gap_ele) {
   }
 }
 
-function show_results() {
+function show_results(){
+  setTimeout(function search_results() {
   var index = document.form.campus.selectedIndex
   var building = document.form.building.value
   if (building == ""){
@@ -33,6 +34,8 @@ function show_results() {
       alert('Search failure: ' + response)
     }
   })
+}
+,200);
 }
 
 /* Submit AJAX request for retrieving the spaceinfo div element */
