@@ -31,11 +31,10 @@ function show_results(){
       gap.innerHTML = response
     },
     error: function(response) {
-      alert('Search failure: ' + response)
     }
   })
 }
-,200);
+,500);
 }
 
 /* Submit AJAX request for retrieving the spaceinfo div element */
