@@ -126,6 +126,21 @@ a {
   clear: both;  
 }
 
+article#filter a:link, a:visited {
+  color:#fff;
+}
+article#filter a:hover {
+  color:black;
+}
+article#filter a {
+  background-color: #bbb;
+  -moz-border-radius: 4px;
+  -webkit-border-radius: 4px;
+  border-radius: 4px;
+}
+article#filter a.current {
+  background-color:#6f0;
+}
 /*
 ================================================
   Gap related CSS

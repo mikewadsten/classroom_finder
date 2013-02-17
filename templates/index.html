@@ -1,18 +1,22 @@
 {% include 'header.html' %}
 
 <article id='filter' class='i'>
-   	<p class=iTtl>Filter</p>
-      <form name='form'>
-        Select Campus: 
-        <select id='campus' name='campus' onchange='show_results()'>
-          <option value='east' name='east'>East Bank</option><br>
-          <option value='west' name='west'>West Bank</option><br>
-          <option value='stpaul' name='stpaul'>St. Paul</option><br>
-        </select><br>
-
-        Building: <input type='text' name='building' placeholder='building' onkeyup='show_results()'>
-        <div class='clear'></div>
-      </form>
+  <span>
+    <p class=iTtl>Filter</p>
+    <a href="/">Full</a>
+    <a href="/now">Now</a>
+  </span>
+  <form name='form'>
+    Select Campus: 
+    <select id='campus' name='campus' onchange='show_results()'>
+      <option value='east' name='east'>East Bank</option><br>
+      <option value='west' name='west'>West Bank</option><br>
+      <option value='stpaul' name='stpaul'>St. Paul</option><br>
+    </select>
+    <br>
+    Building: <input type='text' name='building' placeholder='building' onkeyup='show_results()'>
+    <div class='clear'></div>
+  </form>
 </article>
 
      <p class='ctr'><em>Note</em>: length column shows the amount of time remaining as of 

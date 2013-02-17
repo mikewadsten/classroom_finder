@@ -54,3 +54,15 @@ function ajax_spaceinfo(spaceID) {
     }
   })
 }
+
+$(function() {
+    return $('article#filter a').each(function(index, link) {
+      var $link = $(link)
+      var href = $link.attr('href')
+      var URI = document.location.pathname
+      if (href === URI) {
+        $link.addClass('current')
+      } else {$link.removeClass('current')}
+    }) 
+  }) 
+
