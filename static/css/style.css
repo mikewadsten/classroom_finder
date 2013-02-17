@@ -35,11 +35,14 @@ a {
 #navBtn ul a {
 	text-decoration: none;
 	padding: 0 10px;
-	color: #003;
+	color: #333;
 	font-weight: bold;
 }
 #navBtn ul a:hover {
 	color: #900;
+}
+#navBtn ul a:active {
+	color:#003;	
 }
 
 .i {

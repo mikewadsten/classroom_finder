@@ -1,32 +1,4 @@
-<!doctype html> 
-<html lang=en> 
-<head>
-<meta charset=utf-8>
-<title>UMN Classroom Finder</title>
-<meta name="keywords" content="umn, classroom, finder, The Vest">
-<meta name="description" content="UMN Classroom Finder - Check us out on GitHub, tippenein/classroom_finder">
-<meta name="viewport" content="width=device-width; initial-scale=1.0">
-<link href="static/css/style.css" rel="stylesheet" type="text/css">
-<meta name="HandheldFriendly" content="true"/>
-<meta name="MobileOptimized" content="320"/>
-<!-- 57x57 PNG's. Use a full URL file path for Android devices.  -->
-<!--  <link rel="apple-touch-icon-precomposed" href="http://yoursite.com/apple-touch-icon.png">  -->
-<!--  <link rel="icon" type="image/vnd.microsoft.icon" href="http://yoursite.com/favicon.png">  -->
-</head>
-
-<body>
-
-	<nav id=navBtn>
-		<ul>
-			<li><a href="http://www.brontasaur.us">Home</a></li>
-			<li><a href="http://www.google.com">About</a></li>
-		</ul>
-	</nav>
-<!--  end of nav  -->
-
-	<header>
-		<p class=pTtl>UMN Classroom Finder</p>
-	</header>
+{% include 'header.html' %}
 
 <!-- copy & paste this section to add a new item 
 <article class=i>
@@ -61,19 +33,4 @@
   </div>
 </article>
 
-<!-- company info -->
-<section class="ctr i">
-	<p class=iTtl><b>Company Name<br />
-	<a href="#">www.example.com</a></b></p>
-	<p class=smTxt>tagline</p>
-</section>
-
-<!-- footer -->
-<footer class=ftr>
-	<p><a href="http://www.wtfpl.net/">UMN Classroom Finder</a> &nbsp; This application is distributed under the <a href="http://www.wtfpl.net/txt/copying">WTFPL</a></p>
-</footer>
-
-<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
-<script type="text/javascript" src="static/js/main.js"></script>
-</body>
-</html>
+{% include 'footer.html' %}
