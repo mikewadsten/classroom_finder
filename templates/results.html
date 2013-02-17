@@ -1,20 +1,21 @@
     {% if gaps %}
-    <span id='room'><h5>Room</h5></span>
-    <span id='start'><h5>Start Time</h5></span>
-    <span id='end'><h5>End Time</h5></span>
-    <span id='length'><h5>Length</h5></span>
-    <div class='clear'></div>
-    <hr>
+    <div>
+		<div class='column-title col1'><p>Room</p></div>
+        <div class='column-title col2'><p>Start</p></div>
+        <div class='column-title col3'><p>End</p></div>
+        <div class='column-title col4'><p>Length</p></div>
+        <div class='clear'></div>
+    </div>
       {% for gap in gaps %}
       {% if loop.index is even %}
       <div id="gap-{{ gap.spaceID }}" class="gap even" onclick="show_spaceinfo(this);">
       {% else %}
       <div id="gap-{{ gap.spaceID }}" class="gap odd" onclick="show_spaceinfo(this)">
       {% endif %}
-        <span id='room'>{{ gap.roomname }}</span>
-        <span id='start'>{{ gap.start|hmtime }}</span>
-        <span id='end'>{{ gap.end|hmtime }}</span>
-        <span id='length'>{{ gap.length|m_to_h }}</span>
+        <div class='col1'><p>{{ gap.roomname }}</p></div>
+        <div class='col2'><p>{{ gap.start|hmtime }}</p></div>
+        <div class='col3'><p>{{ gap.end|hmtime }}</p></div>
+        <div class='col4'><p>{{ gap.length|m_to_h }}</p></div>
         <div class='clear'></div>
       </div>
       {% endfor %}

@@ -1,40 +1,36 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <meta http-equiv="content-type" content="text/html; charset=utf-8">
-  <link rel="stylesheet" href="static/css/style.css" type="text/css" media="screen, projection">
-  <title>UMN Classroom Finder</title>
+{% include 'header.html' %}
 
-</head>
-<body>
-  <div id="pageinfo">
-    <h3>UMN Classroom Finder</h3>
-    <p>You can help add functionality by forking and contributing 
-        <a href="http://github.com/tippenein/classroom_finder">here</a>
-    </p>
-    <p><em>Note</em>: length column shows the amount of time remaining as of 
+<!-- copy & paste this section to add a new item 
+<article class=i>
+	<p class=iTtl>Item Title</p>
+	<p class=iDes>Item Description</p>
+	<p class=iLnk>Item Link</p>
+</article>
+-->
+
+<article id='filter' class='i'>
+   	<p class=iTtl>Filter</p>
+      <form name='form'>
+        Select Campus: 
+        <select id='campus' name='campus' onchange='show_results()'>
+          <option value='east' name='east'>East Bank</option><br>
+          <option value='west' name='west'>West Bank</option><br>
+          <option value='stpaul' name='stpaul'>St. Paul</option><br>
+        </select><br>
+    
+        Building: <input type='text' name='building' placeholder='building' onkeyup='show_results()'>
+        <div class='clear'></div>
+      </form>
+</article>
+
+     <p class='ctr'><em>Note</em>: length column shows the amount of time remaining as of 
         {{now|readabledate}}
     </p>
 
-  </div>
-  <div class='container'>
-  <form name='form'>
-    Select Campus: 
-    <select id='campus' name='campus' onchange='show_results()'>
-      <option value='east' name='east'>East Bank</option><br>
-      <option value='west' name='west'>West Bank</option><br>
-      <option value='stpaul' name='stpaul'>St. Paul</option><br>
-    </select><br>
-
-    Building: <input type='text' name='building' placeholder='building' onkeyup='show_results()'>
-    <div class='clear'></div>
-  </form>
-
+<article class=i>
   <div id='gaps'>
     {% include 'results.html' %}
   </div>
-</div><!-- end container -->
-<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
-<script type="text/javascript" src="static/js/main.js"></script>
-</body>
-</html>
+</article>
+
+{% include 'footer.html' %}

@@ -1,39 +1,206 @@
+/*
+================================================
+	Main mobile framework CSS
+	Do NOT add any styles related to gaps here
+================================================
+*/
+
 body {
-  font-family: "Arial" sans-serif
+	background: #ccc;
+	display: block;
+	color: #000;
+	font-family: Arial;
+	line-height: 120%;
+	background: url("../images/bar.jpg") repeat-x scroll 0 -125px transparent;
+	min-width: 480px;
+}
+a {
+	text-decoration: none;
+}
+.pTtl {
+	display: block;
+	margin-left: 15px;
+	padding: 10px;
+	color: #000;
+	font-size: 24px;
+	font-weight: bold;
+}
+#navBtn ul {
+	text-indent: -25px;
+	list-style-type: none;
+}
+#navBtn ul li {
+	display: inline;
+}
+#navBtn ul a {
+	text-decoration: none;
+	padding: 0 10px;
+	color: #333;
+	font-weight: bold;
+}
+#navBtn ul a:hover {
+	color: #900;
+}
+#navBtn ul a:active {
+	color:#003;	
 }
 
-.container {
-  padding:6px;
+.i {
+	display: block;
+	clear: both;
+	padding: 15px;
+	margin: 15px;
+	position: relative;
+ 
+  	-moz-box-shadow: 2px 2px 5px 2px #999999; /* Firefox */  
+  	-webkit-box-shadow: 2px 2px 5px 2px #999999; /* Safari, Chrome */  
+  	box-shadow: 2px 2px 5px 2px #999999; /* CSS3 */ 
+	
+	-moz-border-radius: 6px; /* Firefox */  
+  	-webkit-border-radius: 6px; /* Safari, Chrome */  
+  	border-radius: 6px; /* CSS3 */ 
 }
+
+#filter {
+	/*Backgrounds for multiple browsers - use colorzilla.com to generate new ones*/
+	background: rgb(255,255,255); /* Old browsers */
+	background: -moz-linear-gradient(top,  rgba(255,255,255,1) 0%, rgba(243,243,243,1) 50%, rgba(237,237,237,1) 51%, rgba(255,255,255,1) 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(255,255,255,1)), color-stop(50%,rgba(243,243,243,1)), color-stop(51%,rgba(237,237,237,1)), color-stop(100%,rgba(255,255,255,1))); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top,  rgba(255,255,255,1) 0%,rgba(243,243,243,1) 50%,rgba(237,237,237,1) 51%,rgba(255,255,255,1) 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top,  rgba(255,255,255,1) 0%,rgba(243,243,243,1) 50%,rgba(237,237,237,1) 51%,rgba(255,255,255,1) 100%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(top,  rgba(255,255,255,1) 0%,rgba(243,243,243,1) 50%,rgba(237,237,237,1) 51%,rgba(255,255,255,1) 100%); /* IE10+ */
+	background: linear-gradient(to bottom,  rgba(255,255,255,1) 0%,rgba(243,243,243,1) 50%,rgba(237,237,237,1) 51%,rgba(255,255,255,1) 100%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#ffffff',GradientType=0 ); /* IE6-9 */	
+	
+	font-size: 18px;
+}
+
+.iTtl {
+	color: #000;
+	margin: 0px 0px 8px 0px;
+	position: relative;
+	font-weight: bold;
+	font-size: 22px;
+}
+.iDes {
+	color: #333;
+	margin: 0 10px 10px 10px;
+	font-size: 90%;
+}
+.iLnk {
+	color: #0088CC;
+	margin-left: 15px;
+	font-size: 85%;
+	font-style: italic;
+}
+.ftr {
+	line-height: 175%;
+	font-size: 60%;
+	text-align: center;
+}
+.smTxt {
+	font-size: 80%;
+	line-height: 150%;
+}
+.ctr {
+	text-align: center;
+}
+.imgR {
+	float: right;
+	margin: 15px;
+	clear: both;
+	/*  create shadow behind images  */
+	/*  -webkit-box-shadow: 0 0 15px #000; */
+	/*  -moz-box-shadow: 0 0 15px #000; */
+}
+.imgL {
+	float: left;
+	margin:15px;
+	clear: both;
+	/*  create shadow behind images  */
+	/*  -webkit-box-shadow: 0 0 15px #000; */
+	/*  -moz-box-shadow: 0 0 15px #000; */
+}
+
 .clear {
-  clear:both
-}
-#pageinfo {
-  text-align:center;
-}
-.gap:hover {
-  background-color:#986
-}
-span {
-  padding-left: 10px;
-  float:left;
-  width:32%;
-  border-right: solid 2px #333;
-  font-size:105%;
-}
-span#start,
-span#end,
-span#length {
-  width:15%;
+	clear: both;	
 }
 
-.even {
-  background-color:#DDD
+/*
+================================================
+	Gap related CSS
+	Any styling of gap columns, etc goes here
+================================================
+*/
+.column-title {
+	font-weight: bold;	
 }
-#gaps {
-  padding:6px;
-  background-color: #FFF;
+
+.col1, .col2, .col3, .col4 {
+	float:left;
 }
+
+.col1 p, .col2 p, .col3 p, .col4 p {
+	margin-left: 6px;
+	font-size: 19px;
+}
+
+.col1 {
+	/*background-color: blue;*/
+	width: 46%;
+}
+
+.col1 p {
+	white-space:nowrap;
+	overflow: hidden;
+	text-overflow:ellipsis;	
+}
+
+.col2 {
+	/*background-color: red;*/
+	width: 17%;	
+}
+
+.col3 {
+	/*background-color: green;*/
+	width: 17%;
+}
+
+.col4 {
+	/*background-color: yellow;*/
+	width: 20%;
+}
+
+.gap:hover {
+	cursor: hand;
+}
+
+.odd {
+	background-image: linear-gradient(bottom, rgb(240,240,240) 41%, rgb(214,214,214) 69%);
+	background-image: -o-linear-gradient(bottom, rgb(240,240,240) 41%, rgb(214,214,214) 69%);
+	background-image: -moz-linear-gradient(bottom, rgb(240,240,240) 41%, rgb(214,214,214) 69%);
+	background-image: -webkit-linear-gradient(bottom, rgb(240,240,240) 41%, rgb(214,214,214) 69%);
+	background-image: -ms-linear-gradient(bottom, rgb(240,240,240) 41%, rgb(214,214,214) 69%);
+	background-image: -webkit-gradient(
+		linear,
+		left bottom,
+		left top,
+		color-stop(0.41, rgb(240,240,240)),
+		color-stop(0.69, rgb(214,214,214))
+	);
+	-moz-border-radius: 6px; /* Firefox */  
+  	-webkit-border-radius: 6px; /* Safari, Chrome */  
+  	border-radius: 6px; /* CSS3 */ 
+}
+
+/* Space info dropdown styling */
+.classroom-name {
+	margin: 0px 0px 5px 0px;	
+	font-weight: bold;
+	font-size: 24px;
+	line-height: 28px;
+}
+
 .spaceinfo {
-  padding:6px;
+	padding: 12px;	
 }

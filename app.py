@@ -84,6 +84,10 @@ def index():
     # Update the displayed gap length to be (gap.end - now)
     return render_template('index.html', now=now, gaps=gaps)
 
+@app.route('/about', methods=['POST', 'GET'])
+def about():
+    return render_template('about.html')
+
 
 @app.route('/now', methods=['POST', 'GET'])
 def available_now():
