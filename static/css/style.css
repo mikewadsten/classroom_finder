@@ -11,7 +11,7 @@ body {
   color: #000;
   font-family: Arial;
   line-height: 120%;
-  background: url("../images/bar.jpg") repeat-x scroll 0 -125px transparent;
+  background: url("../imgs/bar.jpg") repeat-x scroll 0 -125px transparent;
   min-width: 480px;
 }
 a {
