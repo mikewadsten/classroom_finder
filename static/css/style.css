@@ -126,7 +126,8 @@ a {
   clear: both;  
 }
 
-article#filter a:link, a:visited {
+#filter span a:link, 
+#filter span a:visited {
   color:#fff;
 }
 article#filter a:hover {
