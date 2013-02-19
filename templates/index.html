@@ -1,31 +1,27 @@
 {% include 'header.html' %}
 
-<!-- copy & paste this section to add a new item 
-<article class=i>
-	<p class=iTtl>Item Title</p>
-	<p class=iDes>Item Description</p>
-	<p class=iLnk>Item Link</p>
-</article>
--->
-
 <article id='filter' class='i'>
-   	<p class=iTtl>Filter</p>
-      <form name='form'>
-        Select Campus: 
-        <select id='campus' name='campus' onchange='show_results()'>
-          <option value='east' name='east'>East Bank</option><br>
-          <option value='west' name='west'>West Bank</option><br>
-          <option value='stpaul' name='stpaul'>St. Paul</option><br>
-        </select><br>
-    
-        Building: <input type='text' name='building' placeholder='building' onkeyup='show_results()'>
-        <div class='clear'></div>
-      </form>
+  <span>
+    <p class=iTtl>Filter</p>
+    <a href="/" class='button'>Today</a>
+    <a href="/now" class='button'>Available Now</a>
+  </span>
+  <form name='form'>
+    Select Campus:
+    <select id='campus' name='campus' onchange='show_results()'>
+      <option value='east' name='east'>East Bank</option><br>
+      <option value='west' name='west'>West Bank</option><br>
+      <option value='stpaul' name='stpaul'>St. Paul</option><br>
+    </select>
+    <br>
+    Building: <input type='text' name='building' placeholder='building' onkeyup='show_results()'>
+    <div class='clear'></div>
+  </form>
 </article>
 
-     <p class='ctr'><em>Note</em>: length column shows the amount of time remaining as of 
-        {{now|readabledate}}
-    </p>
+  <p class='ctr'><em>Note</em>: length column shows the amount of time remaining as of 
+    {{now|readabledate}}
+  </p>
 
 <article class=i>
   <div id='gaps'>

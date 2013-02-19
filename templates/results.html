@@ -1,25 +1,25 @@
-    {% if gaps %}
-    <div>
-		<div class='column-title col1'><p>Room</p></div>
-        <div class='column-title col2'><p>Start</p></div>
-        <div class='column-title col3'><p>End</p></div>
-        <div class='column-title col4'><p>Length</p></div>
-        <div class='clear'></div>
-    </div>
-      {% for gap in gaps %}
-      {% if loop.index is even %}
+{% if gaps %}
+<div>
+  <div class='column-title col1'><p>Room</p></div>
+      <div class='column-title col2'><p>Start</p></div>
+      <div class='column-title col3'><p>End</p></div>
+      <div class='column-title col4'><p>Length</p></div>
+      <div class='clear'></div>
+  </div>
+  {% for gap in gaps %}
+    {% if loop.index is even %}
       <div id="gap-{{ gap.spaceID }}" class="gap even" onclick="show_spaceinfo(this);">
-      {% else %}
+    {% else %}
       <div id="gap-{{ gap.spaceID }}" class="gap odd" onclick="show_spaceinfo(this)">
-      {% endif %}
-        <div class='col1'><p>{{ gap.roomname }}</p></div>
-        <div class='col2'><p>{{ gap.start|hmtime }}</p></div>
-        <div class='col3'><p>{{ gap.end|hmtime }}</p></div>
-        <div class='col4'><p>{{ gap.length|m_to_h }}</p></div>
-        <div class='clear'></div>
-      </div>
-      {% endfor %}
-      {% else %}
-        <p>There is no data available. Either it's late and the buildings are closed, 
-        or your search turned up nothing. </p>
-      {% endif %}
+    {% endif %}
+    <div class='col1'><p>{{ gap.roomname }}</p></div>
+    <div class='col2'><p>{{ gap.start|hmtime }}</p></div>
+    <div class='col3'><p>{{ gap.end|hmtime }}</p></div>
+    <div class='col4'><p>{{ gap.length|m_to_h }}</p></div>
+    <div class='clear'></div>
+  </div>
+  {% endfor %}
+{% else %}
+  <p>There is no data available. Either it's late and the buildings are closed, 
+  or your search turned up nothing. </p>
+{% endif %}

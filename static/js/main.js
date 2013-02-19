@@ -12,7 +12,8 @@ function show_spaceinfo(gap_ele) {
   }
 }
 
-function show_results() {
+function show_results(){
+  setTimeout(function search_results() {
   var index = document.form.campus.selectedIndex
   var building = document.form.building.value
   if (building == ""){
@@ -30,9 +31,10 @@ function show_results() {
       gap.innerHTML = response
     },
     error: function(response) {
-      alert('Search failure: ' + response)
     }
   })
+}
+,500);
 }
 
 /* Submit AJAX request for retrieving the spaceinfo div element */
@@ -52,3 +54,15 @@ function ajax_spaceinfo(spaceID) {
     }
   })
 }
+
+$(function() {
+    return $('article#filter a').each(function(index, link) {
+      var $link = $(link)
+      var href = $link.attr('href')
+      var URI = document.location.pathname
+      if (href === URI) {
+        $link.addClass('current')
+      } else {$link.removeClass('current')}
+    }) 
+  }) 
+
