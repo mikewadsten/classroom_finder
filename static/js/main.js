@@ -24,7 +24,7 @@ function show_results(){
   }
   request = $.ajax({
     url: "/search",
-    type: "POST",
+    type: "GET",
     data: postdata,
     success: function(response) {
       var gap = document.getElementById('gaps')
@@ -43,7 +43,7 @@ function ajax_spaceinfo(spaceID) {
 
   request = $.ajax({
     url: "/spaceinfo",
-    type: "POST",
+    type: "GET",
     data: postdata,
     success: function(response) {
       var gap = $("#gap-" + spaceID)
@@ -63,6 +63,6 @@ $(function() {
       if (href === URI) {
         $link.addClass('current')
       } else {$link.removeClass('current')}
-    }) 
-  }) 
+    })
+  })
 

@@ -67,11 +67,11 @@ def favicon():
     return send_from_directory(os.path.join(app.root_path, 'static'),
                                'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
-@app.route('/about', methods=['POST', 'GET'])
+@app.route('/about', methods=['GET'])
 def about():
     return render_template('about.html')
 
-@app.route('/', methods=['POST', 'GET'])
+@app.route('/', methods=['GET'])
 def index():
     now = datetime.strftime(datetime.now(), TIME_FORMAT)
     try:
@@ -90,7 +90,7 @@ def index():
     # Update the displayed gap length to be (gap.end - now)
     return render_template('index.html', now=now, gaps=gaps)
 
-@app.route('/now', methods=['POST', 'GET'])
+@app.route('/now', methods=['GET'])
 def available_now():
     now = datetime.strftime(datetime.now(), TIME_FORMAT)
     try:
@@ -137,10 +137,10 @@ def search_json():
     result = query_db(query)
     return render_template('json_results.html', now=now, gaps=result)
 
-@app.route('/search', methods=['POST', 'GET'])
+@app.route('/search', methods=['GET'])
 def search():
     now = datetime.strftime(datetime.now(), TIME_FORMAT)
-    args = request.form
+    args = request.args
     campus = args.get('campus', None)
     if not campus:  # None, or empty string...
         campus = "east"
@@ -171,9 +171,9 @@ def json_space_info():
         info = results
     return render_template('json_classroom_info.html', info=info)
 
-@app.route('/spaceinfo', methods=['POST'])
+@app.route('/spaceinfo', methods=['GET'])
 def space_info():
-    spaceID = request.form['spaceID']
+    spaceID = request.args['spaceID']
     query = '''
         SELECT roomname, capacity, seat_type, chalk, marker, spaceID
         FROM classrooms WHERE classrooms.spaceID='{}' '''.format(spaceID)
@@ -192,5 +192,5 @@ app.jinja_env.filters['m_to_h'] = mins_to_hrs
 
 if __name__ == '__main__':
     app.debug= True
-    app.run()
+    app.run(port=8001)
 
