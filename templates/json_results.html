@@ -1,0 +1,5 @@
+{% if gaps %}
+{{ gaps | tojson }}
+{% else %}
+{"error": "There is no data available. Either it's late and the buildings are closed, or your search turned up nothing."}
+{% endif %}
