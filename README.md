@@ -7,9 +7,11 @@ It's quite possible to use this as a standalone script to populate a database, b
 hosting it somewhere was better.  
 
 ### The Scrapers
-To get fresh html source data, run the main scraper (`scraper.py`) with 
-`SCRAPER_ENV=production python scraper.py` otherwise it'll assume you want 
-the EastBank.html dump for testing. This supplies you with the sqlite3 database
+To get fresh html source data, run the main scraper (`scraper.py`). Or for 
+a marginally faster scrape, `DEBUG=true python scraper.py`  which will use 
+the EastBank.html dump for testing.  
+
+This supplies you with the sqlite3 database
 
 ### The web app
 The Flask app accesses the db created by scrapers and allows you to interact with it.

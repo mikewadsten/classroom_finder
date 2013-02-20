@@ -9,8 +9,6 @@ from lib.utils import int_to_month
 
 # configuration -> app.config['DATABASE'] => 'database.db'
 DATABASE = 'database.db'
-
-# globally useful variables
 TIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 # initialize the app
@@ -59,7 +57,7 @@ def mins_to_hrs(minutes):
     return '{}h {}m'.format(h,m)
 
 def room_url(sid):
-    ''' this is the individual room page. We may or may not need it'''
+    ''' this is for the individual room page.'''
     return "http://wvprd.ocm.umn.edu/gpcwv/wv3_servlet/urd/run/" \
         + "wv_space.Detail?RoomID={}".format(sid)
 
@@ -68,6 +66,10 @@ def room_url(sid):
 def favicon():
     return send_from_directory(os.path.join(app.root_path, 'static'),
                                'favicon.ico', mimetype='image/vnd.microsoft.icon')
+
+@app.route('/about', methods=['POST', 'GET'])
+def about():
+    return render_template('about.html')
 
 @app.route('/', methods=['POST', 'GET'])
 def index():
@@ -87,10 +89,6 @@ def index():
 
     # Update the displayed gap length to be (gap.end - now)
     return render_template('index.html', now=now, gaps=gaps)
-
-@app.route('/about', methods=['POST', 'GET'])
-def about():
-    return render_template('about.html')
 
 @app.route('/now', methods=['POST', 'GET'])
 def available_now():
@@ -121,7 +119,6 @@ def search_json():
     delta = timedelta(hours=-6)
     now = datetime.strftime(datetime.now() + delta, TIME_FORMAT)
     args = request.args.to_dict(flat=True)
-    print "search:", args
     campus = args.get('campus', None)
     if not campus:  # None, or empty string...
         campus = "east"
@@ -143,25 +140,23 @@ def search_json():
 @app.route('/search', methods=['POST', 'GET'])
 def search():
     now = datetime.strftime(datetime.now(), TIME_FORMAT)
-    try:
-        campus = request.form['campus']
-    except KeyError:
-        campus = 'east'
-    try:
-        search_terms = request.form['search']
-        query = '''
-            SELECT roomname,start,end,length, {0}.spaceID FROM {0}
-            JOIN classrooms on (classrooms.spaceID={0}.spaceID)
-            WHERE end > '{1}' AND length > 30
-            AND roomname LIKE '%{2}%' '''.format(campus, now, search_terms)
-    except KeyError:
-        query = '''
-            SELECT roomname, start, end, length, {0}.spaceID FROM {0}
-            JOIN classrooms on (classrooms.spaceID={0}.spaceID)
-            WHERE end > '{1}' AND length > 30
-            ORDER BY start ASC
-            '''.format(campus,now)
-    return render_template('results.html', now=now, gaps=query_db(query))
+    args = request.form
+    campus = args.get('campus', None)
+    if not campus:  # None, or empty string...
+        campus = "east"
+    search_terms = args.get('search', None)
+    if not search_terms:  # None, or empty string...
+        search_terms = "ORDER BY start ASC"
+    else:
+        search_terms = "AND roomname LIKE '%{0}%'".format(search_terms)
+
+    query = '''
+        SELECT roomname,start,end,length,{0}.spaceID FROM {0}
+        JOIN classrooms ON (classrooms.spaceID={0}.spaceID)
+        WHERE end > '{1}' AND length > 30
+         {2}'''.format(campus, now, search_terms)
+    result = query_db(query)
+    return render_template('results.html', now=now, gaps=result)
 
 @app.route('/spaceinfo.json', methods=['GET'])
 def json_space_info():
@@ -171,7 +166,6 @@ def json_space_info():
         FROM classrooms WHERE spaceID='{}' '''.format(spaceID)
     try:
         results = query_db(query)
-        print results
         info = results[0]
     except IndexError:
         info = results
@@ -184,9 +178,10 @@ def space_info():
         SELECT roomname, capacity, seat_type, chalk, marker, spaceID
         FROM classrooms WHERE classrooms.spaceID='{}' '''.format(spaceID)
     try:
-        info = (query_db(query))[0]
+        results = query_db(query)
+        info = results[0]
     except IndexError:
-        info = query_db(query)
+        info = results
     return render_template('classroom_info.html', info=info)
 
 

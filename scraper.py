@@ -59,15 +59,13 @@ def init(campus):
     #  if running this as a script w/ python version < 2.7.3, use html5lib via pip install
     parser = "html.parser"
 
-    # run with SCRAPER_ENV=production if you want fresh data
-    if os.environ.get("SCRAPER_ENV") == "production":
+    if os.environ.get("DEBUG"):
+        soup = BeautifulSoup(open("test/EastBank.html"), parser)
+    else:
         usock = urllib2.urlopen(constructURL(today, campus))
         source = usock.read()
         usock.close()
         soup = BeautifulSoup(source)
-    # Debug mode
-    else:
-        soup = BeautifulSoup(open("test/EastBank.html"), parser)
 
     content = soup.find('div', {'id': 'ContentBox'})
     if content is None:

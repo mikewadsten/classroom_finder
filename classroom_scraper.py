@@ -38,14 +38,13 @@ def init():
     init_db()
 
     parser = "html.parser"
-    if os.environ.get("SCRAPER_ENV") == 'production':
-        #TODO url for data source
+    if os.environ.get("DEBUG"):
+        soup = BeautifulSoup(open("test/dump_classrooms.html"), parser)
+    else:
         usock = urllib2.urlopen(url)
         source = usock.read()
         usock.close()
         soup = BeautifulSoup(source)
-    else:
-        soup = BeautifulSoup(open("test/dump_classrooms.html"), parser)
 
     rows = soup.table.tbody.findAll('tr', class_=re.compile("even_row|odd_row"))
     for row in rows:
