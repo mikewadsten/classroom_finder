@@ -8,6 +8,8 @@ import os
 from lib.utils import int_to_month
 
 # configuration -> app.config['DATABASE'] => 'database.db'
+DEBUG=(True if os.environ.get('DEBUG') in ['1', 'True'] else False)
+PORT=int(os.environ.get('PORT', 5000))
 DATABASE = 'database.db'
 TIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 
@@ -191,6 +193,5 @@ app.jinja_env.filters['readabledate'] = readabledate
 app.jinja_env.filters['m_to_h'] = mins_to_hrs
 
 if __name__ == '__main__':
-    app.debug= True
-    app.run(port=8001)
+    app.run(port=app.config['PORT'])
 
