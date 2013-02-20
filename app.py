@@ -1,6 +1,7 @@
-from flask import Flask, request, url_for, redirect, \
-             render_template, g, send_from_directory
-from datetime import datetime
+#!/usr/bin/env python
+from flask import Flask, request, render_template, g, send_from_directory
+                #url_for, redirect
+from datetime import datetime, timedelta
 import sqlite3
 import os
 
@@ -8,6 +9,9 @@ from lib.utils import int_to_month
 
 # configuration -> app.config['DATABASE'] => 'database.db'
 DATABASE = 'database.db'
+
+# globally useful variables
+TIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 # initialize the app
 app = Flask(__name__)
@@ -41,13 +45,13 @@ def query_db(query, args=(), one=False):
 
 # jinja datetime methods
 def readabledate(time):
-    t = datetime.strptime(time, "%Y-%m-%d %H:%M:%S")
+    t = datetime.strptime(time, TIME_FORMAT)
     return "{} on {} {}, {}".format(
             hmtime(time), int_to_month(t.month), t.day, t.year)
 
 def hmtime(time):
     ''' returns HH:MM time '''
-    t = datetime.strptime(time, "%Y-%m-%d %H:%M:%S")
+    t = datetime.strptime(time, TIME_FORMAT)
     return '%d:%02d'%(t.hour, t.minute)
 
 def mins_to_hrs(minutes):
@@ -67,9 +71,9 @@ def favicon():
 
 @app.route('/', methods=['POST', 'GET'])
 def index():
-    now = datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")
+    now = datetime.strftime(datetime.now(), TIME_FORMAT)
     try:
-        campus = request.form['campus']
+        campus = request.args['campus']
     except KeyError:
         campus = 'east'
 
@@ -88,12 +92,11 @@ def index():
 def about():
     return render_template('about.html')
 
-
 @app.route('/now', methods=['POST', 'GET'])
 def available_now():
-    now = datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")
+    now = datetime.strftime(datetime.now(), TIME_FORMAT)
     try:
-        campus = request.form['campus']
+        campus = request.args['campus']
     except KeyError:
         campus = 'east'
 
@@ -106,15 +109,40 @@ def available_now():
 
     # Update the displayed gap length to be (gap.end - now)
     for gap in gaps:
-        end = datetime.strptime(gap['end'], "%Y-%m-%d %H:%M:%S")
+        end = datetime.strptime(gap['end'], TIME_FORMAT)
         avail_length = end - datetime.now()
         gap['length'] = avail_length.seconds/60
     gaps.sort(reverse=True)
     return render_template('index.html', now=now, gaps=gaps)
 
+@app.route('/search.json', methods=['GET'])
+def search_json():
+    # delta: for debugging, introduce an added timedelta to 'now'
+    delta = timedelta(hours=-6)
+    now = datetime.strftime(datetime.now() + delta, TIME_FORMAT)
+    args = request.args.to_dict(flat=True)
+    print "search:", args
+    campus = args.get('campus', None)
+    if not campus:  # None, or empty string...
+        campus = "east"
+
+    search_terms = args.get('search', None)
+    if not search_terms:  # None, or empty string...
+        search_terms = "ORDER BY start ASC"
+    else:
+        search_terms = "AND roomname LIKE '%{0}%'".format(search_terms)
+
+    query = '''
+        SELECT roomname,start,end,length,{0}.spaceID FROM {0}
+        JOIN classrooms ON (classrooms.spaceID={0}.spaceID)
+        WHERE end > '{1}' AND length > 30
+         {2}'''.format(campus, now, search_terms)
+    result = query_db(query)
+    return render_template('json_results.html', now=now, gaps=result)
+
 @app.route('/search', methods=['POST', 'GET'])
 def search():
-    now = datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")
+    now = datetime.strftime(datetime.now(), TIME_FORMAT)
     try:
         campus = request.form['campus']
     except KeyError:
@@ -124,7 +152,7 @@ def search():
         query = '''
             SELECT roomname,start,end,length, {0}.spaceID FROM {0}
             JOIN classrooms on (classrooms.spaceID={0}.spaceID)
-            WHERE end > '{1}' AND length > 30 
+            WHERE end > '{1}' AND length > 30
             AND roomname LIKE '%{2}%' '''.format(campus, now, search_terms)
     except KeyError:
         query = '''
@@ -135,6 +163,19 @@ def search():
             '''.format(campus,now)
     return render_template('results.html', now=now, gaps=query_db(query))
 
+@app.route('/spaceinfo.json', methods=['GET'])
+def json_space_info():
+    spaceID = request.args.get('spaceID', 0)
+    query = '''
+        SELECT roomname, capacity, seat_type, chalk, marker, spaceID
+        FROM classrooms WHERE spaceID='{}' '''.format(spaceID)
+    try:
+        results = query_db(query)
+        print results
+        info = results[0]
+    except IndexError:
+        info = results
+    return render_template('json_classroom_info.html', info=info)
 
 @app.route('/spaceinfo', methods=['POST'])
 def space_info():
