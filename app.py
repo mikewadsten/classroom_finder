@@ -118,7 +118,7 @@ def available_now():
 @app.route('/search.json', methods=['GET'])
 def search_json():
     # delta: for debugging, introduce an added timedelta to 'now'
-    delta = timedelta(hours=-6)
+    delta = timedelta(hours=0)
     now = datetime.strftime(datetime.now() + delta, TIME_FORMAT)
     args = request.args.to_dict(flat=True)
     campus = args.get('campus', None)
