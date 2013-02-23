@@ -49,7 +49,7 @@ def init():
     rows = soup.table.tbody.findAll('tr', class_=re.compile("even_row|odd_row"))
     for row in rows:
         try:
-            url_search = row.find('a', {'class', 'roomInfo'})
+            url_search = row.find('a', {'class': 'roomInfo'})
             classroom_id = re.search('(?<=RoomID=)\w+', url_search.get('href')).group(0)
             features = row.find_all('td')
         #TODO get correct exceptions and raise
