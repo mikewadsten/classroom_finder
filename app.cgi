@@ -53,6 +53,25 @@ def json_search(db, args):
             d["start"] = hmtime(d["start"])
         if "end" in d:
             d["end"] = hmtime(d["end"])
+        try:
+            rn = d.pop("roomname")
+            import re
+            reg = r'(?P<bldg>[\w\s,&-]+), Room (?P<room>[\d\w\s-]+)$'
+            split = None
+            try:
+                split = re.search(reg, rn).groupdict()
+            except Exception:
+                pass
+            if split is None:
+                d["roomname"] = rn
+                d["building"] = rn
+                d["roomnum"] = "N/A"
+            else:
+                d["building"] = split["bldg"]
+                d["roomname"] = " ".join((split["bldg"], split["room"]))
+                d["roomnum"] = split["room"]
+        except Exception:
+            pass
     print json.dumps(result)
 
 print "Content-Type: application/json\n"
