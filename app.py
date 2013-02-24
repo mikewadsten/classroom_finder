@@ -5,7 +5,6 @@ from flask import (Flask, request, render_template, g, send_from_directory,
 from datetime import datetime, timedelta
 import sqlite3
 import os
-import json
 
 from lib.utils import int_to_month
 
@@ -168,13 +167,11 @@ def search_json():
                 d["roomnum"] = split["room"]
         except Exception:
             pass
-    # TODO: http://flask.pocoo.org/docs/security/#json-security
-    # top-level arrays is a bad practice in json. change api to
-    # something like {"items": [...]}, especially since then we
-    # can just call jsonify(**items)
-    # - in the meantime, use json.dumps
-    #return jsonify(items=result)
-    return json.dumps(result)
+    # http://flask.pocoo.org/docs/security/#json-security
+    # Top-level arrays is a bad practice in json. Change API
+    # (JS or other code using this API, I mean) to consume
+    # room data as {"rooms": [...]}
+    return jsonify(rooms=result)
 
 @app.route('/search', methods=['GET'])
 def search():
