@@ -41,13 +41,15 @@ def json_search(db, args):
         search_terms = "AND roomname LIKE '%{0}%'".format(search_terms)
 
     query = '''
-        SELECT roomname,start,end,length,{0}.spaceID FROM {0}
+        SELECT gapID,roomname,start,end,length,{0}.spaceID FROM {0}
         JOIN classrooms ON (classrooms.spaceID={0}.spaceID)
-        WHERE end > '{1}' AND length > 30
+        WHERE length > 30
          {2}'''.format(campus, now, search_terms)
     result = query_db(db, query)
     if not result:
-        result = []
+        print {"error": "Database lookup failed"}
+        return
+        #result = []
     for d in result:
         if "start" in d:
             d["start"] = hmtime(d["start"])
@@ -68,7 +70,7 @@ def json_search(db, args):
                 d["roomnum"] = "N/A"
             else:
                 d["building"] = split["bldg"]
-                d["roomname"] = " ".join((split["bldg"], split["room"]))
+                d["roomname"] = split["room"]
                 d["roomnum"] = split["room"]
         except Exception:
             pass
