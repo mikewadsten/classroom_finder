@@ -39,11 +39,11 @@ db = conn.cursor()
 
 def init_db(campus):
     db.execute('''DROP TABLE IF EXISTS {}'''.format(campus))
-    db.execute('''CREATE TABLE {} (spaceID INT, start DATE, 
-                end DATE, length INTEGER)'''.format(campus))
+    db.execute('''CREATE TABLE {} (gapID INTEGER PRIMARY KEY,
+                  spaceID INT, start DATE, end DATE, length INTEGER)'''.format(campus))
 
 def insert_gap(campus, spaceID, start, end, length):
-    query = '''INSERT INTO {} (spaceID,start,end,length) VALUES 
+    query = '''INSERT INTO {} (spaceID,start,end,length) VALUES
             ('{}', '{}', '{}', {})
             '''.format(campus, spaceID, start, end, length)
     db.execute(query)
@@ -60,8 +60,11 @@ def init(campus):
     parser = "html.parser"
 
     if os.environ.get("DEBUG"):
+        print "Parsing from test html"
         soup = BeautifulSoup(open("test/EastBank.html"), parser)
     else:
+        url = constructURL(today, campus)
+        print "Scraping", url
         usock = urllib2.urlopen(constructURL(today, campus))
         source = usock.read()
         usock.close()
@@ -109,9 +112,9 @@ def init(campus):
 
 
 def get_gap_times(times):
-    ''' return gaps ((start.hour, start.minute)(end.hour, end.minute)). 
+    ''' return gaps ((start.hour, start.minute)(end.hour, end.minute)).
         This will be called on a per room basis
-        @param times - a list of time tuples [((start.hour, start.minute)(end.hour, end.minute))...] 
+        @param times - a list of time tuples [((start.hour, start.minute)(end.hour, end.minute))...]
     '''
     # buidings open at 8:00 and close at 10:00
     prev_event = (None, datetime.datetime(today.year, today.month, today.day, 8, 0))
@@ -132,5 +135,6 @@ def _gap(_from, _to):
 
 if __name__ == '__main__':
     for campus in campus_list:
+        print "Scraping", campus
         init(campus)
 
