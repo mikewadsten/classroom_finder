@@ -1,5 +1,6 @@
 #!/usr/bin/env python
-from flask import Flask, request, render_template, g, send_from_directory
+from flask import (Flask, request, render_template, g, send_from_directory,
+    jsonify)
                 #url_for, redirect
 from datetime import datetime, timedelta
 import sqlite3
@@ -132,12 +133,45 @@ def search_json():
         search_terms = "AND roomname LIKE '%{0}%'".format(search_terms)
 
     query = '''
-        SELECT roomname,start,end,length,{0}.spaceID FROM {0}
+        SELECT gapID,roomname,start,end,length,{0}.spaceID FROM {0}
         JOIN classrooms ON (classrooms.spaceID={0}.spaceID)
         WHERE end > '{1}' AND length > 30
          {2}'''.format(campus, now, search_terms)
     result = query_db(query)
-    return render_template('json_results.html', now=now, gaps=result)
+    if not result:
+        resp = {"error":
+                ("There is no data available. Either it's late and the "
+                 "buildings are closed, or your search turned up nothing.")}
+        return jsonify(**resp)
+    for d in result:
+        if "start" in d:
+            d["start"] = hmtime(d["start"])
+        if "end" in d:
+            d["end"] = hmtime(d["end"])
+        try:
+            rn = d.pop("roomname")
+            import re
+            reg = r'(?P<bldg>[\w\s,&-]+), Room (?P<room>[\d\w\s-]+)$'
+            split = None
+            try:
+                split = re.search(reg, rn).groupdict()
+            except Exception:
+                pass
+            if split is None:
+                d["roomname"] = rn
+                d["building"] = rn
+                d["roomnum"] = "N/A"
+            else:
+                d["building"] = split["bldg"]
+                d["roomname"] = split["room"]
+                d["roomnum"] = split["room"]
+        except Exception:
+            pass
+    # http://flask.pocoo.org/docs/security/#json-security
+    # Top-level arrays is a bad practice in json. Change API
+    # (JS or other code using this API, I mean) to consume
+    # room data as {"rooms": [...]}
+    return jsonify(rooms=result)
 
 @app.route('/search', methods=['GET'])
 def search():
@@ -162,7 +196,9 @@ def search():
 
 @app.route('/spaceinfo.json', methods=['GET'])
 def json_space_info():
-    spaceID = request.args.get('spaceID', 0)
+    spaceID = request.args.get('spaceID', None)
+    if spaceID is None:  # no spaceID given
+        return jsonify(error="Space ID must be given.")
     query = '''
         SELECT roomname, capacity, seat_type, chalk, marker, spaceID
         FROM classrooms WHERE spaceID='{}' '''.format(spaceID)
@@ -171,7 +207,8 @@ def json_space_info():
         info = results[0]
     except IndexError:
         info = results
-    return render_template('json_classroom_info.html', info=info)
+    info["room_url"] = room_url(info["spaceID"])
+    return jsonify(**info)
 
 @app.route('/spaceinfo', methods=['GET'])
 def space_info():
