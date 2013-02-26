@@ -126,10 +126,12 @@ def search_json():
     if not campus:  # None, or empty string...
         campus = "east"
 
+    is_search = False
     search_terms = args.get('search', None)
     if not search_terms:  # None, or empty string...
         search_terms = "ORDER BY start ASC"
     else:
+        is_search = True
         search_terms = "AND roomname LIKE '%{0}%'".format(search_terms)
 
     query = '''
@@ -139,10 +141,13 @@ def search_json():
          {2}'''.format(campus, now, search_terms)
     result = query_db(query)
     if not result:
-        resp = {"error":
-                ("There is no data available. Either it's late and the "
-                 "buildings are closed, or your search turned up nothing.")}
-        return jsonify(**resp)
+        if is_search:  # it was a query, so say no results
+            result = []
+        else:  # nothing is open or something like that
+            resp = {"error":
+                ("There is no data available. Most likely this is because "
+                 "it's late and the buildings are closed.")}
+            return jsonify(**resp)
     for d in result:
         if "start" in d:
             d["start"] = hmtime(d["start"])
