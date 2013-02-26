@@ -8,6 +8,8 @@ from datetime import datetime, timedelta
 DATABASE = 'database.db'
 TIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 
+SERVER_OFFSET = 2  # DreamHost server is on Pacific time it seems
+
 def query_db(db, query, args=(), one=False):
     cur = db.execute(query, args)
     rv = [dict((cur.description[idx][0], value)
@@ -28,16 +30,18 @@ def hmtime(time):
 
 def json_search(db, args):
     # delta: for debugging, introduce an added timedelta to 'now'
-    delta = timedelta(hours=0)
+    delta = timedelta(hours=SERVER_OFFSET + 0)
     now = datetime.strftime(datetime.now() + delta, TIME_FORMAT)
     campus = args.get('campus', [None])[0]
     if not campus:
         campus = "east"
 
+    is_search = False
     search_terms = args.get('search', [None])[0]
     if not search_terms:  # None, or empty string...
         search_terms = "ORDER BY start ASC"
     else:
+        is_search = True
         search_terms = "AND roomname LIKE '%{0}%'".format(search_terms)
 
     query = '''
@@ -47,7 +51,14 @@ def json_search(db, args):
          {2}'''.format(campus, now, search_terms)
     result = query_db(db, query)
     if not result:
-        result = []
+        if is_search:  # it was a query, so say no results
+            result = []
+        else:  # just a sync request, but nothing is open
+            print json.dumps({"error":
+                    ("There is no data available. Most likely this "
+                    "is because it's late and the buildings are closed.")})
+            return
+        #result = []
     for d in result:
         if "start" in d:
             d["start"] = hmtime(d["start"])
