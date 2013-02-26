@@ -23,6 +23,7 @@ import datetime
 import sqlite3
 import urllib2
 import os
+import requests
 
 from lib.utils import constructURL, get_space_id
 
@@ -65,9 +66,10 @@ def init(campus):
     else:
         url = constructURL(today, campus)
         print "Scraping", url
-        usock = urllib2.urlopen(constructURL(today, campus))
-        source = usock.read()
-        usock.close()
+        resp = requests.get(url)
+        source = resp.text
+        #with open("%s-out.html" % campus, "w") as f:
+            #f.write(source)
         soup = BeautifulSoup(source)
 
     content = soup.find('div', {'id': 'ContentBox'})
@@ -83,7 +85,7 @@ def init(campus):
     events = {}
     for event in eventList:
         #TODO rewrite regex to grab space id from the first href
-        href = event[0].find('a', {'class', 'ListText'}).get('href')
+        href = event[0].find('a', {'class': 'ListText'}).get('href')
         sid = int(get_space_id(href))
         start_times = event[1].stripped_strings
         end_times = event[2].stripped_strings

@@ -28,7 +28,7 @@ def hmtime(time):
 
 def json_search(db, args):
     # delta: for debugging, introduce an added timedelta to 'now'
-    delta = timedelta(hours=-5)
+    delta = timedelta(hours=0)
     now = datetime.strftime(datetime.now() + delta, TIME_FORMAT)
     campus = args.get('campus', [None])[0]
     if not campus:
@@ -43,13 +43,11 @@ def json_search(db, args):
     query = '''
         SELECT gapID,roomname,start,end,length,{0}.spaceID FROM {0}
         JOIN classrooms ON (classrooms.spaceID={0}.spaceID)
-        WHERE length > 30
+        WHERE end > '{1}' AND length > 30
          {2}'''.format(campus, now, search_terms)
     result = query_db(db, query)
     if not result:
-        print {"error": "Database lookup failed"}
-        return
-        #result = []
+        result = []
     for d in result:
         if "start" in d:
             d["start"] = hmtime(d["start"])
@@ -74,7 +72,8 @@ def json_search(db, args):
                 d["roomnum"] = split["room"]
         except Exception:
             pass
-    print json.dumps(result)
+    #print json.dumps({"items": result})
+    print json.dumps({"rooms": result})
 
 print "Content-Type: application/json\n"
 try:

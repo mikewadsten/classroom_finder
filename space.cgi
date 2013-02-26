@@ -40,6 +40,6 @@ except Exception, e:
 
 args = cgi.parse()  # query string parsed
 #import time
-#time.sleep(11)
+#time.sleep(6)
 json_spaceinfo(db, args)
 
